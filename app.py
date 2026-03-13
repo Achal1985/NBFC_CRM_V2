@@ -59,6 +59,7 @@ def search():
         "Principal Outstanding": str(loan.iloc[0]["Principal_Outstanding"]),
         "Interest Outstanding": str(loan.iloc[0]["Interest_Outstanding"]),
         "Charges Outstanding": str(loan.iloc[0]["Charges_Outstanding"]),
+        "Interest Rate": str(loan.iloc[0]["Interest_Rate"]),
         "EMI Amount": str(loan.iloc[0]["EMI_Amount"]),
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
@@ -67,6 +68,11 @@ def search():
         ग्राहक का नाम {customer.iloc[0]['Customer_Name']} है।
         लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
         EMI अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
+        Principal Outstanding अमाउंट {loan.iloc[0]['Principal_Outstanding']} रुपये है।
+        Interest Outstanding अमाउंट {loan.iloc[0]['Interest_Outstanding']} रुपये है।
+        Balance Principal अमाउंट {loan.iloc[0]['Balance_Principal']} रुपये है।
+        Charges Outstanding अमाउंट {loan.iloc[0]['Charges_Outstanding']} रुपये है।
+        Interest Rate  {loan.iloc[0]['Interest_Rate']} रुपये है।
         लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
         क्या आप कोई और जानकारी लेना चाहते हैं
         """
