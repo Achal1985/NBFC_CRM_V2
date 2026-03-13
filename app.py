@@ -64,7 +64,7 @@ def search():
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
         "voice": f"""
-        Welcome to Religare Finvest Limited AI Enabled CRM Chatbot,मैं जल्द ही आपकी Loan Details बताऊंगी
+        Welcome to RFL AI Enabled CRM Chatbot,मैं जल्द ही आपकी Loan Details बताऊंगी
         ग्राहक का नाम {customer.iloc[0]['Customer_Name']} है।
         लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
         E M I अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
