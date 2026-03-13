@@ -296,7 +296,7 @@ function startVoice() {
     console.log("Clean Number:", transcript);
 
     document.getElementById("search").value = transcript;
-
+    recognition.stop();
     searchCRM();
 
 };
