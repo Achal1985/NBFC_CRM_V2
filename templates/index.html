@@ -11,30 +11,56 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
+/* GLOBAL */
+
+*{
+box-sizing:border-box;
+}
+
 body{
 font-family:Segoe UI;
 margin:0;
-background:linear-gradient(135deg,#1f4037,#99f2c8);
+background:linear-gradient(-45deg,#1f4037,#99f2c8,#0f2027,#2c5364);
+background-size:400% 400%;
+animation:gradientMove 12s ease infinite;
 }
 
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* NAVBAR */
+
 .navbar{
-background:#0f2027;
+background:rgba(0,0,0,0.6);
 color:white;
 padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+backdrop-filter:blur(10px);
 }
 
 .logo{
 font-size:22px;
 font-weight:bold;
+letter-spacing:1px;
 }
 
 .menu i{
 margin-left:20px;
 cursor:pointer;
+transition:0.3s;
 }
+
+.menu i:hover{
+transform:scale(1.3);
+color:#99f2c8;
+}
+
+/* MAIN CONTAINER */
 
 .container{
 width:900px;
@@ -42,15 +68,29 @@ margin:60px auto;
 background:white;
 padding:40px;
 border-radius:15px;
-box-shadow:0 15px 40px rgba(0,0,0,0.3);
+box-shadow:0 20px 50px rgba(0,0,0,0.4);
 text-align:center;
+animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(40px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 .title{
-font-size:30px;
+font-size:32px;
 margin-bottom:30px;
 color:#1f4037;
 }
+
+/* SEARCH */
 
 .search-box{
 display:flex;
@@ -60,31 +100,66 @@ margin-bottom:20px;
 
 .search-box input{
 width:60%;
-padding:12px;
+padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
 font-size:16px;
+transition:0.3s;
+}
+
+.search-box input:focus{
+outline:none;
+border-color:#1f4037;
+box-shadow:0 0 10px rgba(31,64,55,0.5);
 }
 
 .search-box button{
-padding:12px 20px;
+padding:14px 22px;
 border:none;
 background:#1f4037;
 color:white;
 cursor:pointer;
 font-size:16px;
+transition:0.3s;
 }
+
+.search-box button:hover{
+background:#2d6e63;
+transform:scale(1.05);
+}
+
+/* VOICE BUTTON */
 
 .voice-btn{
 margin-top:10px;
-padding:10px 20px;
+padding:12px 24px;
 border:none;
 background:#ff6a00;
 color:white;
 border-radius:8px;
 cursor:pointer;
 font-size:16px;
+transition:0.3s;
 }
+
+.voice-btn:hover{
+background:#ff8c2b;
+transform:scale(1.05);
+}
+
+/* MIC PULSE ANIMATION */
+
+.voice-active{
+animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+0%{box-shadow:0 0 0 0 rgba(255,106,0,0.7);}
+70%{box-shadow:0 0 0 15px rgba(255,106,0,0);}
+100%{box-shadow:0 0 0 0 rgba(255,106,0,0);}
+}
+
+/* RESULT CARD */
 
 .result-card{
 margin-top:30px;
@@ -92,7 +167,19 @@ padding:20px;
 background:#f4f6f7;
 border-radius:10px;
 text-align:left;
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+animation:slideUp 0.5s ease;
+}
+
+@keyframes slideUp{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 .result-row{
@@ -104,7 +191,10 @@ border-bottom:1px solid #ddd;
 
 .label{
 font-weight:bold;
+color:#333;
 }
+
+/* FOOTER */
 
 .footer{
 margin-top:50px;
@@ -144,8 +234,6 @@ color:white;
 
 <button class="voice-btn" onclick="startVoice()">🎤 Hindi Voice Search</button>
 
-
-
 <div id="result"></div>
 
 </div>
@@ -159,48 +247,45 @@ RFL CRM AI System | Python + AI
 /* Load voices */
 
 let voices=[];
-let isSpeaking = false;
-    
-window.speechSynthesis.onvoiceschanged = () => {
-voices = speechSynthesis.getVoices();
-};
+let isSpeaking=false;
 
+window.speechSynthesis.onvoiceschanged=()=>{
+voices=speechSynthesis.getVoices();
+};
 
 /* Female Hindi Voice */
 
 function speak(text){
 
-const speech = new SpeechSynthesisUtterance(text);
-
+const speech=new SpeechSynthesisUtterance(text);
 speech.lang="hi-IN";
 
-/* try to find female voice */
-
-const voice = voices.find(v =>
+const voice=voices.find(v =>
 v.lang.includes("hi") &&
 (
-v.name.toLowerCase().includes("Neerja") ||
+v.name.toLowerCase().includes("neerja") ||
 v.name.toLowerCase().includes("female") ||
-v.name.toLowerCase().includes("google hindi")||
+v.name.toLowerCase().includes("google") ||
 v.name.toLowerCase().includes("microsoft")
 )
 );
 
 if(voice){
-speech.voice = voice;
+speech.voice=voice;
 }
 
-speech.rate = 0.8;
-speech.pitch = 1.0;
+speech.rate=0.8;
+speech.pitch=1.0;
 
-speech.onend = function(){
-isSpeaking = false;
+isSpeaking=true;
+
+speech.onend=function(){
+isSpeaking=false;
 };
-    
+
 speechSynthesis.speak(speech);
 
 }
-
 
 /* CRM Search */
 
@@ -260,76 +345,64 @@ document.getElementById("result").innerHTML=html;
 
 }
 
-
 /* Hindi Voice Input */
 
-function startVoice() {
+function startVoice(){
 
-    if (isSpeaking) {
-        console.log("AI is speaking, mic disabled");
-        return;
-    }
+if(isSpeaking){
+console.log("AI speaking, mic disabled");
+return;
+}
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
-        alert("Your browser does not support voice recognition. Please use Google Chrome.");
-        return;
-    }
+if(!SpeechRecognition){
+alert("Use Google Chrome for voice recognition");
+return;
+}
 
-    const recognition = new SpeechRecognition();
+const recognition=new SpeechRecognition();
 
-    recognition.lang = "hi-IN";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+recognition.lang="hi-IN";
+recognition.continuous=false;
+recognition.interimResults=false;
 
-    // Optional voice guide
-    speak("कृपया मोबाइल नंबर बोलिए");
+document.querySelector(".voice-btn").classList.add("voice-active");
 
-    console.log("Mic starting in 2 seconds...");
+speak("कृपया मोबाइल नंबर बोलिए");
 
-    setTimeout(() => {
+setTimeout(()=>{
+recognition.start();
+},2000);
 
-        recognition.start();
-        console.log("🎤 Speak now...");
+recognition.onresult=function(event){
 
-    }, 2000);
+let transcript=event.results[0][0].transcript;
 
+const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
 
-    recognition.onresult = function (event) {
+for(let i=0;i<10;i++){
+transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i);
+}
 
-        let transcript = event.results[0][0].transcript;
+transcript=transcript.replace(/\D/g,'');
 
-        console.log("Raw Voice:", transcript);
+document.getElementById("search").value=transcript;
 
-        // Convert Hindi digits to English
-        const hindiNums = ['०','१','२','३','४','५','६','७','८','९'];
+recognition.stop();
 
-        for(let i=0;i<10;i++){
-            transcript = transcript.replace(new RegExp(hindiNums[i],'g'), i);
-        }
+searchCRM();
 
-        // Remove everything except numbers
-        transcript = transcript.replace(/\D/g,'');
+};
 
-        console.log("Clean Number:", transcript);
+recognition.onerror=function(event){
+console.log("Voice error:",event.error);
+};
 
-        document.getElementById("search").value = transcript;
-
-        recognition.stop();
-
-        searchCRM();
-    };
-
-
-    recognition.onerror = function (event) {
-        console.log("Voice error:", event.error);
-    };
-
-
-    recognition.onend = function () {
-        console.log("🎤 Voice input closed");
-    };
+recognition.onend=function(){
+document.querySelector(".voice-btn").classList.remove("voice-active");
+console.log("Voice input closed");
+};
 
 }
 
