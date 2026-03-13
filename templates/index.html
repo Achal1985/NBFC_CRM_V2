@@ -159,7 +159,8 @@ RFL CRM AI System | Python + AI
 /* Load voices */
 
 let voices=[];
-
+let isSpeaking = false;
+    
 window.speechSynthesis.onvoiceschanged = () => {
 voices = speechSynthesis.getVoices();
 };
@@ -192,6 +193,10 @@ speech.voice = voice;
 speech.rate = 1.0;
 speech.pitch = 1.2;
 
+speech.onend = function(){
+isSpeaking = false;
+};
+    
 speechSynthesis.speak(speech);
 
 }
@@ -278,15 +283,17 @@ function startVoice() {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    console.log("Mic will start in 10 seconds...");
+    // Optional voice guide
+    speak("कृपया मोबाइल नंबर बोलिए");
 
-    // Delay microphone start
+    console.log("Mic starting in 2 seconds...");
+
     setTimeout(() => {
 
         recognition.start();
         console.log("🎤 Speak now...");
 
-    }, 10000);
+    }, 2000);
 
 
     recognition.onresult = function (event) {
@@ -295,8 +302,15 @@ function startVoice() {
 
         console.log("Raw Voice:", transcript);
 
+        // Convert Hindi digits to English
+        const hindiNums = ['०','१','२','३','४','५','६','७','८','९'];
+
+        for(let i=0;i<10;i++){
+            transcript = transcript.replace(new RegExp(hindiNums[i],'g'), i);
+        }
+
         // Remove everything except numbers
-        transcript = transcript.replace(/\D/g, '');
+        transcript = transcript.replace(/\D/g,'');
 
         console.log("Clean Number:", transcript);
 
@@ -307,9 +321,11 @@ function startVoice() {
         searchCRM();
     };
 
+
     recognition.onerror = function (event) {
         console.log("Voice error:", event.error);
     };
+
 
     recognition.onend = function () {
         console.log("🎤 Voice input closed");
