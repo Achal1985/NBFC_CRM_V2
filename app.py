@@ -72,7 +72,7 @@ def search():
         Interest Outstanding अमाउंट {loan.iloc[0]['Interest_Outstanding']} रुपये है।
         Balance Principal अमाउंट {loan.iloc[0]['Balance_Principal']} रुपये है।
         Charges Outstanding अमाउंट {loan.iloc[0]['Charges_Outstanding']} रुपये है।
-        Interest Rate  {loan.iloc[0]['Interest_Rate']} रुपये है।
+        Interest Rate  {loan.iloc[0]['Interest_Rate']} percent है।
         लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
         क्या आप कोई और जानकारी लेना चाहते हैं
         """
