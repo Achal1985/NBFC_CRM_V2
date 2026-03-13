@@ -263,7 +263,7 @@ function startVoice() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-        alert("Your browser does not support voice recognition. Please use Google Chrome.");
+        alert("Use Google Chrome for voice recognition.");
         return;
     }
 
@@ -273,34 +273,33 @@ function startVoice() {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    recognition.start();
+    console.log("🎤 Voice button clicked... starting in 3 seconds");
 
-    recognition.onstart = function () {
+    // Delay start
+    setTimeout(() => {
+
+        recognition.start();
         console.log("🎤 Speak now...");
-    };
 
-    recognition.onresult = function (event) {
+    }, 10000);   // 10000 ms = 10 seconds
+
+
+    recognition.onresult = function(event) {
 
         const transcript = event.results[0][0].transcript;
 
-        console.log("Hindi Voice:", transcript);
+        console.log("Voice:", transcript);
 
-        // Put voice text in search box
         document.getElementById("search").value = transcript;
 
-        // Auto search
         searchCRM();
     };
 
-    recognition.onerror = function (event) {
+    recognition.onerror = function(event){
         console.log("Voice error:", event.error);
     };
-
-    recognition.onend = function () {
-        console.log("Voice ended");
-    };
-
 }
+
 </script>
 
 </body>
