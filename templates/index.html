@@ -269,33 +269,37 @@ function startVoice() {
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "hi-IN";   // Hindi voice input
+    recognition.lang = "hi-IN";
     recognition.continuous = false;
     recognition.interimResults = false;
 
     recognition.start();
 
     recognition.onstart = function () {
-        console.log("Voice recognition started. Speak now...");
+        console.log("🎤 Speak now...");
     };
 
     recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript;
-        console.log("You said:", transcript);
 
+        const transcript = event.results[0][0].transcript;
+
+        console.log("Hindi Voice:", transcript);
+
+        // Put voice text in search box
         document.getElementById("search").value = transcript;
 
-        // Optional: auto search
+        // Auto search
         searchCRM();
     };
 
     recognition.onerror = function (event) {
-        console.error("Voice error:", event.error);
+        console.log("Voice error:", event.error);
     };
 
     recognition.onend = function () {
-        console.log("Voice recognition ended.");
+        console.log("Voice ended");
     };
+
 }
 </script>
 
