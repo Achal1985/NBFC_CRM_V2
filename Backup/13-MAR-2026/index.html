@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>RFL CRM AI Dashboard</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+font-family:Segoe UI;
+margin:0;
+background:linear-gradient(135deg,#1f4037,#99f2c8);
+}
+
+.navbar{
+background:#0f2027;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+.menu i{
+margin-left:20px;
+cursor:pointer;
+}
+
+.container{
+width:900px;
+margin:60px auto;
+background:white;
+padding:40px;
+border-radius:15px;
+box-shadow:0 15px 40px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+.title{
+font-size:30px;
+margin-bottom:30px;
+color:#1f4037;
+}
+
+.search-box{
+display:flex;
+justify-content:center;
+margin-bottom:20px;
+}
+
+.search-box input{
+width:60%;
+padding:12px;
+border-radius:8px 0 0 8px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+.search-box button{
+padding:12px 20px;
+border:none;
+background:#1f4037;
+color:white;
+cursor:pointer;
+font-size:16px;
+}
+
+.voice-btn{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+background:#ff6a00;
+color:white;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+.result-card{
+margin-top:30px;
+padding:20px;
+background:#f4f6f7;
+border-radius:10px;
+text-align:left;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.result-row{
+display:flex;
+justify-content:space-between;
+padding:8px 0;
+border-bottom:1px solid #ddd;
+}
+
+.label{
+font-weight:bold;
+}
+
+.footer{
+margin-top:50px;
+text-align:center;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+<div class="logo">
+<i class="fa-solid fa-building-columns"></i> RFL CRM AI
+</div>
+
+<div class="menu">
+<i class="fa-solid fa-user"></i>
+<i class="fa-solid fa-bell"></i>
+<i class="fa-solid fa-gear"></i>
+</div>
+</div>
+
+<div class="container">
+
+<div class="title">AI Powered CRM Dashboard</div>
+
+<div class="search-box">
+<input id="search" placeholder="Enter Mobile / Loan Account / Customer ID">
+
+<button onclick="searchCRM()">
+<i class="fa fa-search"></i> Search
+</button>
+</div>
+
+<button class="voice-btn" onclick="startVoice()">🎤 Hindi Voice Search</button>
+
+
+
+<div id="result"></div>
+
+</div>
+
+<div class="footer">
+RFL CRM AI System | Python + AI
+</div>
+
+<script>
+
+/* Load voices */
+
+let voices=[];
+
+window.speechSynthesis.onvoiceschanged = () => {
+voices = speechSynthesis.getVoices();
+};
+
+
+/* Female Hindi Voice */
+
+function speak(text){
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.lang="hi-IN";
+
+/* try to find female voice */
+
+const voice = voices.find(v =>
+v.lang.includes("hi") &&
+(
+v.name.toLowerCase().includes("Neerja") ||
+v.name.toLowerCase().includes("female") ||
+v.name.toLowerCase().includes("google hindi")||
+v.name.toLowerCase().includes("microsoft")
+)
+);
+
+if(voice){
+speech.voice = voice;
+}
+
+speech.rate = 1.2;
+speech.pitch = 1.2;
+
+speechSynthesis.speak(speech);
+
+}
+
+
+/* CRM Search */
+
+function searchCRM(){
+
+let query=document.getElementById("search").value;
+
+fetch("/search",{
+method:"POST",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:"query="+query
+})
+.then(res=>res.json())
+.then(data=>{
+
+let html="";
+
+if(data.Message){
+
+html='<div class="result-card">'+data.Message+'</div>';
+speak(data.Message);
+
+}
+
+else{
+
+html='<div class="result-card">';
+
+for(let key in data){
+
+if(key!="voice"){
+
+html+=`
+<div class="result-row">
+<div class="label">${key}</div>
+<div>${data[key]}</div>
+</div>
+`;
+
+}
+
+}
+
+html+='</div>';
+
+if(data.voice){
+speak(data.voice);
+}
+
+}
+
+document.getElementById("result").innerHTML=html;
+
+});
+
+}
+
+
+/* Hindi Voice Input */
+
+function startVoice() {
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Your browser does not support voice recognition. Please use Google Chrome.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "hi-IN";   // Hindi voice input
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.start();
+
+    recognition.onstart = function () {
+        console.log("Voice recognition started. Speak now...");
+    };
+
+    recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        console.log("You said:", transcript);
+
+        document.getElementById("searchBox").value = transcript;
+
+        // Optional: auto search
+        searchCustomer();
+    };
+
+    recognition.onerror = function (event) {
+        console.error("Voice error:", event.error);
+    };
+
+    recognition.onend = function () {
+        console.log("Voice recognition ended.");
+    };
+}
+</script>
+
+</body>
+</html>

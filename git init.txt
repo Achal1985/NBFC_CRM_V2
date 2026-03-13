@@ -1,0 +1,6 @@
+git init
+git add .
+git commit -m "Initial commit of NBFC CRM project"
+git branch -M main
+git remote add origin https://github.com/Achal1985/NBFC_CRM_V2.git
+git push -u origin main

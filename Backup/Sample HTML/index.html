@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<title>NBFC AI Voice CRM</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+font-family: Arial;
+background:#0f172a;
+margin:0;
+color:white;
+}
+
+.header{
+background:#1e293b;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
+}
+
+.container{
+display:flex;
+height:90vh;
+}
+
+.sidebar{
+width:220px;
+background:#020617;
+padding:20px;
+}
+
+.sidebar h3{
+color:#38bdf8;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar ul li{
+padding:10px;
+cursor:pointer;
+}
+
+.sidebar ul li:hover{
+background:#1e293b;
+}
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.chat-area{
+flex:1;
+overflow-y:auto;
+padding:20px;
+}
+
+.message{
+margin-bottom:15px;
+}
+
+.bot{
+background:#1e293b;
+padding:10px;
+border-radius:8px;
+width:60%;
+}
+
+.user{
+background:#2563eb;
+padding:10px;
+border-radius:8px;
+width:60%;
+margin-left:auto;
+}
+
+.search-area{
+background:#1e293b;
+padding:15px;
+display:flex;
+gap:10px;
+}
+
+.search-area input{
+flex:1;
+padding:10px;
+border:none;
+border-radius:5px;
+}
+
+.search-area button{
+padding:10px 15px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.voice-btn{
+background:#22c55e;
+color:white;
+}
+
+.search-btn{
+background:#3b82f6;
+color:white;
+}
+
+.result-box{
+background:#020617;
+padding:15px;
+border-top:1px solid #334155;
+height:150px;
+overflow:auto;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+🤖 NBFC AI Voice CRM Assistant
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>CRM Menu</h3>
+
+<ul>
+<li>Dashboard</li>
+<li>Customer Search</li>
+<li>Loan Details</li>
+<li>EMI Status</li>
+<li>Collection Module</li>
+</ul>
+
+</div>
+
+<div class="main">
+
+<div class="chat-area" id="chatArea">
+
+<div class="message bot">
+Hello 👋 I am your AI CRM Assistant.  
+You can search customer using Mobile, Loan ID or Voice.
+</div>
+
+</div>
+
+<div class="search-area">
+
+<input type="text" id="searchInput" placeholder="Enter Mobile / Loan Account / Customer ID">
+
+<button class="voice-btn" onclick="startVoice()">
+<i class="fa fa-microphone"></i>
+</button>
+
+<button class="search-btn" onclick="searchCustomer()">
+Search
+</button>
+
+</div>
+
+<div class="result-box" id="resultBox">
+
+Customer details will appear here...
+
+</div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

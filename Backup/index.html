@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RFL CRM Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #002b5b, #004e92);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 450px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #002b5b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            background: #f4f6f9;
+            overflow-y: auto;
+        }
+
+        .result-box {
+            background: #e3e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .form-area {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #002b5b;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #001f40;
+        }
+
+        @media(max-width: 500px){
+            .container {
+                width: 95%;
+                height: 95vh;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        🏦 RFL CRM Assistant
+    </div>
+
+    <div class="chat-area">
+        {% if result %}
+            <div class="result-box">
+                {{ result }}
+            </div>
+        {% endif %}
+    </div>
+
+    <form method="POST">
+        <div class="form-area">
+
+            <!-- MUST MATCH: request.form.get("CustomerID") -->
+            <input type="text" name="CustomerID" placeholder="Enter Customer ID" required>
+
+            <!-- MUST MATCH: request.form.get("option") -->
+            <select name="option" required>
+                <option value="">Select Service</option>
+                <option value="loan">Loan Details</option>
+                <option value="emi">EMI Details</option>
+            </select>
+
+            <button type="submit">Submit</button>
+
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>
