@@ -286,16 +286,20 @@ function startVoice() {
 
     recognition.onresult = function (event) {
 
-        const transcript = event.results[0][0].transcript;
+    let transcript = event.results[0][0].transcript;
 
-        console.log("Hindi Voice:", transcript);
+    console.log("Raw Voice:", transcript);
 
-        // Put voice text in search box
-        document.getElementById("search").value = transcript;
+    // Remove everything except numbers
+    transcript = transcript.replace(/\D/g, '');
 
-        // Auto search
-        searchCRM();
-    };
+    console.log("Clean Number:", transcript);
+
+    document.getElementById("search").value = transcript;
+
+    searchCRM();
+
+};
 
     recognition.onerror = function (event) {
         console.log("Voice error:", event.error);
