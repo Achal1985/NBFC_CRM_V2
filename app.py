@@ -60,7 +60,7 @@ def search():
         "Interest Outstanding": str(loan.iloc[0]["Interest_Outstanding"]),
         "Charges Outstanding": str(loan.iloc[0]["Charges_Outstanding"]),
         "Interest Rate": str(loan.iloc[0]["Interest_Rate"]),
-        "EMI Amount": str(loan.iloc[0]["EMI_Amount"]),
+        "E M I Amount": str(loan.iloc[0]["EMI_Amount"]),
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
         "voice": f"""
