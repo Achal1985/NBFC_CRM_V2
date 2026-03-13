@@ -283,7 +283,7 @@ function startVoice() {
         const transcript = event.results[0][0].transcript;
         console.log("You said:", transcript);
 
-        document.getElementById("searchBox").value = transcript;
+        document.getElementById("search").value = transcript;
 
         // Optional: auto search
         searchCustomer();
