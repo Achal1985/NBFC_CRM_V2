@@ -63,7 +63,7 @@ def search():
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
         "voice": f"""
-        Welcome to RFL AI CRM Chatbot,मैं जल्द ही आपको Loan Details bataongi
+        Welcome to RFL AI CRM Chatbot,मैं जल्द ही आपको Loan Details बताऊंगी
         ग्राहक का नाम {customer.iloc[0]['Customer_Name']} है।
         लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
         EMI अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
