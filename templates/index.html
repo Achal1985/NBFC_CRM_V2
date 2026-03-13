@@ -260,6 +260,11 @@ document.getElementById("result").innerHTML=html;
 
 function startVoice() {
 
+    if (isSpeaking) {
+        console.log("AI is speaking, mic disabled");
+        return;
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -273,40 +278,41 @@ function startVoice() {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    recognition.start();
+    console.log("Mic will start in 10 seconds...");
 
-    recognition.onstart = function () {
-         setTimeout(() => {
+    // Delay microphone start
+    setTimeout(() => {
 
         recognition.start();
         console.log("🎤 Speak now...");
 
-    }, 10000);  
-    };
+    }, 10000);
+
 
     recognition.onresult = function (event) {
 
-    let transcript = event.results[0][0].transcript;
+        let transcript = event.results[0][0].transcript;
 
-    console.log("Raw Voice:", transcript);
+        console.log("Raw Voice:", transcript);
 
-    // Remove everything except numbers
-    transcript = transcript.replace(/\D/g, '');
+        // Remove everything except numbers
+        transcript = transcript.replace(/\D/g, '');
 
-    console.log("Clean Number:", transcript);
+        console.log("Clean Number:", transcript);
 
-    document.getElementById("search").value = transcript;
-    recognition.stop();
-    searchCRM();
+        document.getElementById("search").value = transcript;
 
-};
+        recognition.stop();
+
+        searchCRM();
+    };
 
     recognition.onerror = function (event) {
         console.log("Voice error:", event.error);
     };
 
     recognition.onend = function () {
-        console.log("Voice ended");
+        console.log("🎤 Voice input closed");
     };
 
 }
