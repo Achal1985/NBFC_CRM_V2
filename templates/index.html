@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>RFL CRM AI Dashboard</title>
 
 <link rel="stylesheet"
@@ -41,6 +42,7 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 backdrop-filter:blur(10px);
+flex-wrap:wrap;
 }
 
 .logo{
@@ -63,7 +65,8 @@ color:#99f2c8;
 /* MAIN CONTAINER */
 
 .container{
-width:900px;
+max-width:900px;
+width:90%;
 margin:60px auto;
 background:white;
 padding:40px;
@@ -96,10 +99,12 @@ color:#1f4037;
 display:flex;
 justify-content:center;
 margin-bottom:20px;
+flex-wrap:wrap;
 }
 
 .search-box input{
-width:60%;
+flex:1;
+min-width:200px;
 padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
@@ -200,6 +205,52 @@ color:#333;
 margin-top:50px;
 text-align:center;
 color:white;
+padding-bottom:30px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width:768px){
+
+.navbar{
+flex-direction:column;
+gap:10px;
+text-align:center;
+}
+
+.container{
+padding:25px;
+margin:30px auto;
+}
+
+.title{
+font-size:24px;
+}
+
+.search-box{
+flex-direction:column;
+}
+
+.search-box input{
+width:100%;
+border-radius:8px;
+margin-bottom:10px;
+}
+
+.search-box button{
+width:100%;
+border-radius:8px;
+}
+
+.voice-btn{
+width:100%;
+}
+
+.result-row{
+flex-direction:column;
+gap:5px;
+}
+
 }
 
 </style>
