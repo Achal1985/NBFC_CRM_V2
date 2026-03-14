@@ -55,6 +55,7 @@ def search():
         "Loan Amount": str(loan.iloc[0]["Loan_Amount"]),
         "Principal Outstanding": str(loan.iloc[0]["Principal_Outstanding"]),
         "Interest Outstanding": str(loan.iloc[0]["Interest_Outstanding"]),
+        "Balance Principal": str(loan.iloc[0]["Balance_Principal"]),
         "Charges Outstanding": str(loan.iloc[0]["Charges_Outstanding"]),
         "Interest Rate": str(loan.iloc[0]["Interest_Rate"]),
         "E M I Amount": str(loan.iloc[0]["EMI_Amount"]),
