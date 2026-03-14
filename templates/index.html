@@ -72,6 +72,8 @@ width:100%;
 
 .search-box input{
 flex:1;
+width:100%;
+min-width:0;
 padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
@@ -152,6 +154,8 @@ color:white;
 padding-bottom:30px;
 }
 
+/* MOBILE FIX */
+
 @media (max-width:768px){
 
 .container{
@@ -160,15 +164,23 @@ padding:25px;
 
 .search-box{
 flex-direction:column;
+width:100%;
 }
 
 .search-box input{
+width:100%;
+font-size:14px;
 border-radius:8px;
 margin-bottom:10px;
 }
 
+.search-box input::placeholder{
+font-size:14px;
+}
+
 .search-box button{
 border-radius:8px;
+width:100%;
 }
 
 .voice-btn{
@@ -245,8 +257,6 @@ speechSynthesis.speak(speech);
 
 }
 
-/* RENDER CARDS */
-
 function renderCards(data){
 
 let html='<div class="result-grid">';
@@ -268,8 +278,6 @@ document.getElementById("result").innerHTML=html;
 
 }
 
-/* TAB SWITCH */
-
 function showCustomer(){
 
 document.getElementById("tabCustomer").classList.add("active-tab");
@@ -287,8 +295,6 @@ document.getElementById("tabCustomer").classList.remove("active-tab");
 renderCards(communicationData);
 
 }
-
-/* SEARCH */
 
 function searchCRM(){
 
@@ -345,8 +351,6 @@ speak(data.voice);
 
 }
 
-/* VOICE SEARCH */
-
 function startVoice(){
 
 if(isSpeaking){
@@ -366,8 +370,6 @@ recognition.lang="hi-IN";
 recognition.continuous=false;
 recognition.interimResults=false;
 
-/* VOICE PROMPT */
-
 speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए");
 
 setTimeout(()=>{
@@ -377,8 +379,6 @@ recognition.start();
 recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript;
-
-/* HINDI NUMBER CONVERSION */
 
 const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
 
