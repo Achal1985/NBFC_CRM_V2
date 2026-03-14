@@ -1,11 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
-import os
-
-# Use relative path
 file_path = os.path.join(os.path.dirname(__file__), "NBFC_CRM_Windows11_Chatbot.xlsx")
 
 customer_df = pd.read_excel(file_path, sheet_name="Customer_Master")
@@ -15,7 +13,6 @@ loan_df = pd.read_excel(file_path, sheet_name="Loan_Details")
 @app.route("/")
 def home():
     return render_template("index.html")
-    
 
 
 @app.route("/search", methods=["POST"])
@@ -63,6 +60,14 @@ def search():
         "E M I Amount": str(loan.iloc[0]["EMI_Amount"]),
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
+        # CUSTOMER COMMUNICATION DETAILS
+        "Address": str(customer.iloc[0]["Address"]),
+        "City": str(customer.iloc[0]["City"]),
+        "State": str(customer.iloc[0]["State"]),
+        "Pincode": str(customer.iloc[0]["Pincode"]),
+        "Email ID": str(customer.iloc[0]["Email_ID"]),
+        "GST Number": str(customer.iloc[0]["GST_Number"]),
+
         "voice": f"""
         Welcome to RFL AI Enabled CRM Chatbot,मैं जल्द ही आपकी Loan Details बताऊंगी
         ग्राहक का नाम {customer.iloc[0]['Customer_Name']} है।
@@ -76,11 +81,11 @@ def search():
         लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
         क्या आप कोई और जानकारी लेना चाहते हैं
         """
-
     }
 
     return jsonify(data)
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
