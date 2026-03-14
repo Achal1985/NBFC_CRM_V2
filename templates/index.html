@@ -48,18 +48,6 @@ flex-wrap:wrap;
 .logo{
 font-size:22px;
 font-weight:bold;
-letter-spacing:1px;
-}
-
-.menu i{
-margin-left:20px;
-cursor:pointer;
-transition:0.3s;
-}
-
-.menu i:hover{
-transform:scale(1.3);
-color:#99f2c8;
 }
 
 /* MAIN CONTAINER */
@@ -73,18 +61,6 @@ padding:40px;
 border-radius:15px;
 box-shadow:0 20px 50px rgba(0,0,0,0.4);
 text-align:center;
-animation:fadeIn 1s ease;
-}
-
-@keyframes fadeIn{
-from{
-opacity:0;
-transform:translateY(40px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
 }
 
 .title{
@@ -109,13 +85,6 @@ padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
 font-size:16px;
-transition:0.3s;
-}
-
-.search-box input:focus{
-outline:none;
-border-color:#1f4037;
-box-shadow:0 0 10px rgba(31,64,55,0.5);
 }
 
 .search-box button{
@@ -125,12 +94,6 @@ background:#1f4037;
 color:white;
 cursor:pointer;
 font-size:16px;
-transition:0.3s;
-}
-
-.search-box button:hover{
-background:#2d6e63;
-transform:scale(1.05);
 }
 
 /* VOICE BUTTON */
@@ -144,59 +107,49 @@ color:white;
 border-radius:8px;
 cursor:pointer;
 font-size:16px;
+}
+
+/* RESULT GRID */
+
+.result-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-top:25px;
+}
+
+/* CRM CARD */
+
+.crm-card{
+background:#ffffff;
+border-radius:12px;
+padding:15px;
+box-shadow:0 6px 18px rgba(0,0,0,0.15);
 transition:0.3s;
+text-align:left;
 }
 
-.voice-btn:hover{
-background:#ff8c2b;
-transform:scale(1.05);
+.crm-card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
 }
 
-/* MIC PULSE ANIMATION */
-
-.voice-active{
-animation:pulse 1.2s infinite;
+.crm-title{
+font-size:14px;
+color:#666;
+margin-bottom:6px;
 }
 
-@keyframes pulse{
-0%{box-shadow:0 0 0 0 rgba(255,106,0,0.7);}
-70%{box-shadow:0 0 0 15px rgba(255,106,0,0);}
-100%{box-shadow:0 0 0 0 rgba(255,106,0,0);}
+.crm-value{
+font-size:18px;
+font-weight:bold;
+color:#1f4037;
 }
 
-/* RESULT CARD */
+/* RESULT CARD WRAPPER */
 
 .result-card{
 margin-top:30px;
-padding:20px;
-background:#f4f6f7;
-border-radius:10px;
-text-align:left;
-box-shadow:0 10px 25px rgba(0,0,0,0.25);
-animation:slideUp 0.5s ease;
-}
-
-@keyframes slideUp{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-.result-row{
-display:flex;
-justify-content:space-between;
-padding:8px 0;
-border-bottom:1px solid #ddd;
-}
-
-.label{
-font-weight:bold;
-color:#333;
 }
 
 /* FOOTER */
@@ -208,47 +161,25 @@ color:white;
 padding-bottom:30px;
 }
 
-/* MOBILE RESPONSIVE */
+/* MOBILE */
 
 @media (max-width:768px){
-
-.navbar{
-flex-direction:column;
-gap:10px;
-text-align:center;
-}
-
-.container{
-padding:25px;
-margin:30px auto;
-}
-
-.title{
-font-size:24px;
-}
 
 .search-box{
 flex-direction:column;
 }
 
 .search-box input{
-width:100%;
 border-radius:8px;
 margin-bottom:10px;
 }
 
 .search-box button{
-width:100%;
 border-radius:8px;
 }
 
 .voice-btn{
 width:100%;
-}
-
-.result-row{
-flex-direction:column;
-gap:5px;
 }
 
 }
@@ -262,12 +193,6 @@ gap:5px;
 <div class="navbar">
 <div class="logo">
 <i class="fa-solid fa-building-columns"></i> RFL CRM AI
-</div>
-
-<div class="menu">
-<i class="fa-solid fa-user"></i>
-<i class="fa-solid fa-bell"></i>
-<i class="fa-solid fa-gear"></i>
 </div>
 </div>
 
@@ -304,7 +229,7 @@ window.speechSynthesis.onvoiceschanged=()=>{
 voices=speechSynthesis.getVoices();
 };
 
-/* Female Hindi Voice */
+/* Speak */
 
 function speak(text){
 
@@ -335,7 +260,7 @@ speechSynthesis.speak(speech);
 
 }
 
-/* CRM Search */
+/* SEARCH */
 
 function searchCRM(){
 
@@ -362,16 +287,16 @@ speak(data.Message);
 
 else{
 
-html='<div class="result-card">';
+html='<div class="result-card"><div class="result-grid">';
 
 for(let key in data){
 
 if(key!="voice"){
 
 html+=`
-<div class="result-row">
-<div class="label">${key}</div>
-<div>${data[key]}</div>
+<div class="crm-card">
+<div class="crm-title">${key}</div>
+<div class="crm-value">${data[key]}</div>
 </div>
 `;
 
@@ -379,7 +304,7 @@ html+=`
 
 }
 
-html+='</div>';
+html+='</div></div>';
 
 if(data.voice){
 speak(data.voice);
@@ -393,19 +318,18 @@ document.getElementById("result").innerHTML=html;
 
 }
 
-/* Hindi Voice Input */
+/* VOICE INPUT */
 
 function startVoice(){
 
 if(isSpeaking){
-console.log("AI speaking, mic disabled");
 return;
 }
 
 const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Use Google Chrome for voice recognition");
+alert("Use Google Chrome");
 return;
 }
 
@@ -414,8 +338,6 @@ const recognition=new SpeechRecognition();
 recognition.lang="hi-IN";
 recognition.continuous=false;
 recognition.interimResults=false;
-
-document.querySelector(".voice-btn").classList.add("voice-active");
 
 speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए");
 
@@ -427,24 +349,14 @@ recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript;
 
-/* Convert Hindi digits */
-
 const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
 
 for(let i=0;i<10;i++){
 transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i);
 }
 
-/* Remove spaces */
-
 transcript=transcript.replace(/\s+/g,'');
-
-/* Convert to uppercase */
-
 transcript=transcript.toUpperCase();
-
-/* Keep only letters and numbers */
-
 transcript=transcript.replace(/[^A-Z0-9]/g,'');
 
 document.getElementById("search").value=transcript;
@@ -453,15 +365,6 @@ recognition.stop();
 
 searchCRM();
 
-};
-
-recognition.onerror=function(event){
-console.log("Voice error:",event.error);
-};
-
-recognition.onend=function(){
-document.querySelector(".voice-btn").classList.remove("voice-active");
-console.log("Voice input closed");
 };
 
 }
