@@ -54,7 +54,7 @@ def search():
         "Customer Name": str(customer.iloc[0]["Customer_Name"]),
         "Customer ID": str(cust_id),
         "Mobile": str(customer.iloc[0]["Mobile_Number"]),
-        "Loan Account": str(loan.iloc[0]["Loan_Account_Number"]),
+        "Loan Account Number": str(loan.iloc[0]["Loan_Account_Number"]),
         "Loan Amount": str(loan.iloc[0]["Loan_Amount"]),
         "Principal Outstanding": str(loan.iloc[0]["Principal_Outstanding"]),
         "Interest Outstanding": str(loan.iloc[0]["Interest_Outstanding"]),
