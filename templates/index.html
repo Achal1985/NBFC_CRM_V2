@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>RFL CRM AI Dashboard</title>
+<title>AI Powered RFL CRM Dashboard</title>
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box;}
 
 body{
 font-family:Segoe UI;
@@ -38,7 +36,6 @@ padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-backdrop-filter:blur(10px);
 }
 
 .logo{
@@ -48,74 +45,73 @@ font-weight:bold;
 
 .container{
 max-width:900px;
-width:90%;
-margin:60px auto;
+width:95%;
+margin:40px auto;
 background:white;
-padding:40px;
+padding:30px;
 border-radius:15px;
 box-shadow:0 20px 50px rgba(0,0,0,0.4);
 text-align:center;
 }
 
 .title{
-font-size:32px;
-margin-bottom:30px;
+font-size:28px;
+margin-bottom:25px;
 color:#1f4037;
 }
 
 .search-box{
 display:flex;
-justify-content:center;
-margin-bottom:20px;
 width:100%;
+margin-bottom:15px;
 }
 
 .search-box input{
 flex:1;
 width:100%;
-min-width:0;
 padding:14px;
-border-radius:8px 0 0 8px;
 border:1px solid #ccc;
-font-size:16px;
+border-radius:8px 0 0 8px;
+font-size:14px;
 }
 
 .search-box button{
-padding:14px 22px;
+padding:14px 20px;
 border:none;
 background:#1f4037;
 color:white;
 cursor:pointer;
-font-size:16px;
 }
 
 .voice-btn{
 margin-top:10px;
-padding:12px 24px;
-border:none;
+padding:12px 20px;
 background:#ff6a00;
 color:white;
+border:none;
 border-radius:8px;
 cursor:pointer;
-font-size:16px;
 }
 
-.tab-header{
+.tabs{
 display:flex;
 justify-content:center;
-gap:40px;
-margin-top:20px;
-font-weight:bold;
+gap:20px;
+margin-top:25px;
+flex-wrap:wrap;
 }
 
-.tab{
-cursor:pointer;
+.tabs button{
 padding:10px 20px;
-border-bottom:3px solid transparent;
+border:none;
+background:#eee;
+cursor:pointer;
+border-radius:6px;
 }
 
-.active-tab{
-border-bottom:3px solid #1f4037;
+.tabs button.active{
+background:#1f4037;
+color:white;
 }
 
 .result-grid{
@@ -125,60 +121,75 @@ gap:15px;
 margin-top:25px;
 }
 
-.crm-card{
-background:#ffffff;
-border-radius:12px;
+.card{
+background:white;
 padding:15px;
-box-shadow:0 6px 18px rgba(0,0,0,0.15);
-transition:0.3s;
+border-radius:10px;
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
 text-align:left;
 }
 
-.crm-title{
-font-size:14px;
+.card-title{
+font-size:13px;
 color:#666;
 }
 
-.crm-value{
-font-size:18px;
+.card-value{
+font-size:17px;
 font-weight:bold;
 color:#1f4037;
 }
 
-.footer{
-margin-top:50px;
-text-align:center;
+.chat-box{
+height:260px;
+overflow:auto;
+border:1px solid #ccc;
+border-radius:8px;
+padding:10px;
+background:#fafafa;
+margin-top:15px;
+}
+
+.chat-input{
+display:flex;
+margin-top:10px;
+}
+
+.chat-input input{
+flex:1;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px 0 0 6px;
+}
+
+.chat-input button{
+padding:10px 15px;
+background:#1f4037;
+border:none;
 color:white;
-padding-bottom:30px;
+border-radius:0 6px 6px 0;
 }
 
-/* MOBILE FIX */
-
-@media (max-width:768px){
-
-.container{
-padding:25px;
+.footer{
+margin-top:40px;
+color:white;
+text-align:center;
 }
+
+@media(max-width:768px){
 
 .search-box{
 flex-direction:column;
-width:100%;
 }
 
 .search-box input{
-width:100%;
-font-size:13px;
 border-radius:8px;
 margin-bottom:10px;
-}
-
-.search-box input::placeholder{
-font-size:13px;
+font-size:14px;
 }
 
 .search-box button{
 border-radius:8px;
-width:100%;
 }
 
 .voice-btn{
@@ -194,9 +205,7 @@ width:100%;
 <body>
 
 <div class="navbar">
-<div class="logo">
-<i class="fa-solid fa-building-columns"></i> RFL CRM AI
-</div>
+<div class="logo">🏦 RFL CRM AI</div>
 </div>
 
 <div class="container">
@@ -204,199 +213,258 @@ width:100%;
 <div class="title">AI Powered RFL CRM Dashboard</div>
 
 <div class="search-box">
-<input id="search" placeholder="Enter Mobile / Loan Account / Customer ID">
+
+<input id="search"
+placeholder="Enter Mobile / Loan Account / Customer ID">
 
 <button onclick="searchCRM()">
 <i class="fa fa-search"></i> Search
 </button>
+
 </div>
 
-<button class="voice-btn" onclick="startVoice()">🎤 Hindi Voice Search</button>
+<button class="voice-btn" onclick="startVoice()">
+🎤 Hindi Voice Search
+</button>
 
-<div class="tab-header">
-<div id="tabCustomer" class="tab active-tab" onclick="showCustomer()">Customer Loan Details</div>
-<div id="tabComm" class="tab" onclick="showCommunication()">Communication Details</div>
+<div class="tabs">
+
+<button id="tabCustomer" class="active" onclick="showCustomer()">Customer Loan Details</button>
+
+<button id="tabCommunication" onclick="showCommunication()">Communication Details</button>
+
+<button id="tabHelp" onclick="showHelpDesk()">HelpDesk</button>
+
 </div>
 
 <div id="result"></div>
 
+<div id="helpdesk" style="display:none">
+
+<div class="chat-box" id="chatBox"></div>
+
+<div class="chat-input">
+
+<input id="chatInput" placeholder="Ask HelpDesk...">
+
+<button onclick="sendChat()">Send</button>
+
+</div>
+
+</div>
+
 </div>
 
 <div class="footer">
-RFL CRM AI System | Python + AI Voice Enabled Assistant
+RFL CRM AI System | Python + Voice Assistant
 </div>
 
 <script>
 
-/* YOUR ORIGINAL JS CODE — UNCHANGED */
+let customerData={}
+let communicationData={}
 
-let voices=[];
-let isSpeaking=false;
+/* TAB HIGHLIGHT FUNCTION */
 
-let customerData={};
-let communicationData={};
+function activateTab(tabId){
 
-window.speechSynthesis.onvoiceschanged=()=>{
-voices=speechSynthesis.getVoices();
-};
+document.querySelectorAll(".tabs button").forEach(btn=>{
+btn.classList.remove("active")
+})
 
-function speak(text){
-
-const speech = new SpeechSynthesisUtterance(text);
-speech.lang="hi-IN";
-
-let voice = speechSynthesis.getVoices().find(v=>v.lang==="hi-IN");
-
-if(voice){
-speech.voice=voice;
-}
-
-speech.rate=0.9;
-
-speechSynthesis.speak(speech);
+document.getElementById(tabId).classList.add("active")
 
 }
 
-function renderCards(data){
-
-let html='<div class="result-grid">';
-
-for(let key in data){
-
-html+=`
-<div class="crm-card">
-<div class="crm-title">${key}</div>
-<div class="crm-value">${data[key]}</div>
-</div>
-`;
-
-}
-
-html+='</div>';
-
-document.getElementById("result").innerHTML=html;
-
-}
-
-function showCustomer(){
-
-document.getElementById("tabCustomer").classList.add("active-tab");
-document.getElementById("tabComm").classList.remove("active-tab");
-
-renderCards(customerData);
-
-}
-
-function showCommunication(){
-
-document.getElementById("tabComm").classList.add("active-tab");
-document.getElementById("tabCustomer").classList.remove("active-tab");
-
-renderCards(communicationData);
-
-}
+/* SEARCH FUNCTION */
 
 function searchCRM(){
 
-let query=document.getElementById("search").value;
+let query=document.getElementById("search").value.trim()
+
+if(query===""){
+alert("Please enter Mobile / Loan Account / Customer ID")
+return
+}
 
 fetch("/search",{
 method:"POST",
 headers:{
 "Content-Type":"application/x-www-form-urlencoded"
 },
-body:"query="+query
+body:"query="+encodeURIComponent(query)
 })
-.then(res=>res.json())
+
+.then(response=>response.json())
+
 .then(data=>{
 
 if(data.Message){
+document.getElementById("result").innerHTML="<h3>"+data.Message+"</h3>"
+return
+}
 
-document.getElementById("result").innerHTML=data.Message;
-speak(data.Message);
-return;
+customerData={
+
+"Customer Name":data["Customer Name"],
+"Customer ID":data["Customer ID"],
+"Mobile":data["Mobile"],
+"Loan Account Number":data["Loan Account Number"],
+"Loan Amount":data["Loan Amount"],
+"Principal Outstanding":data["Principal Outstanding"],
+"Interest Outstanding":data["Interest Outstanding"],
+"Charges Outstanding":data["Charges Outstanding"],
+"Interest Rate":data["Interest Rate"],
+"EMI Amount":data["E M I Amount"],
+"Loan Status":data["Loan Status"]
 
 }
 
-customerData={};
-communicationData={};
+communicationData={
+
+"Address":data["Address"],
+"City":data["City"],
+"State":data["State"],
+"Pincode":data["Pincode"],
+"Email ID":data["Email ID"],
+"GST Number":data["GST Number"]
+
+}
+
+showCustomer()
+
+if(data.voice){
+speak(data.voice)
+}
+
+})
+
+}
+
+/* TAB FUNCTIONS */
+
+function showCustomer(){
+
+activateTab("tabCustomer")
+
+document.getElementById("helpdesk").style.display="none"
+
+renderCards(customerData)
+
+}
+
+function showCommunication(){
+
+activateTab("tabCommunication")
+
+document.getElementById("helpdesk").style.display="none"
+
+renderCards(communicationData)
+
+}
+
+function showHelpDesk(){
+
+activateTab("tabHelp")
+
+document.getElementById("result").innerHTML=""
+
+document.getElementById("helpdesk").style.display="block"
+
+}
+
+/* CARD RENDER */
+
+function renderCards(data){
+
+let html='<div class="result-grid">'
 
 for(let key in data){
 
-if(key=="voice") continue;
-
-if(
-key=="Address" ||
-key=="City" ||
-key=="State" ||
-key=="Pincode" ||
-key=="Email ID" ||
-key=="GST Number"
-){
-communicationData[key]=data[key];
-}
-else{
-customerData[key]=data[key];
-}
+html+=`
+<div class="card">
+<div class="card-title">${key}</div>
+<div class="card-value">${data[key]}</div>
+</div>
+`
 
 }
 
-showCustomer();
+html+='</div>'
 
-if(data.voice){
-speak(data.voice);
-}
-
-});
+document.getElementById("result").innerHTML=html
 
 }
+
+/* CHATBOT */
+
+function sendChat(){
+
+let input=document.getElementById("chatInput").value
+
+if(!input) return
+
+let box=document.getElementById("chatBox")
+
+box.innerHTML+=`<div><b>You:</b> ${input}</div>`
+
+box.innerHTML+=`<div><b>Bot:</b> CRM HelpDesk received your query.</div>`
+
+document.getElementById("chatInput").value=""
+
+box.scrollTop=box.scrollHeight
+
+}
+
+/* SPEAK */
+
+function speak(text){
+
+const speech=new SpeechSynthesisUtterance(text)
+speech.lang="hi-IN"
+
+speechSynthesis.speak(speech)
+
+}
+
+/* VOICE SEARCH */
 
 function startVoice(){
 
-if(isSpeaking){
-return;
-}
+const SpeechRecognition=
+window.SpeechRecognition || window.webkitSpeechRecognition
 
-const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition=new SpeechRecognition()
 
-if(!SpeechRecognition){
-alert("Use Google Chrome");
-return;
-}
+recognition.lang="hi-IN"
 
-const recognition=new SpeechRecognition();
-
-recognition.lang="hi-IN";
-recognition.continuous=false;
-recognition.interimResults=false;
-
-speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए");
+speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए")
 
 setTimeout(()=>{
-recognition.start();
-},2000);
+recognition.start()
+},2000)
 
 recognition.onresult=function(event){
 
-let transcript=event.results[0][0].transcript;
+let transcript=event.results[0][0].transcript
 
-const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
+const hindiNums=['०','१','२','३','४','५','६','७','८','९']
 
 for(let i=0;i<10;i++){
-transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i);
+transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i)
 }
 
-transcript=transcript.replace(/\s+/g,'');
-transcript=transcript.toUpperCase();
-transcript=transcript.replace(/[^A-Z0-9]/g,'');
+transcript=transcript.replace(/\s+/g,'')
+transcript=transcript.toUpperCase()
+transcript=transcript.replace(/[^A-Z0-9]/g,'')
 
-document.getElementById("search").value=transcript;
+document.getElementById("search").value=transcript
 
-recognition.stop();
+recognition.stop()
 
-searchCRM();
+searchCRM()
 
-};
+}
 
 }
 
