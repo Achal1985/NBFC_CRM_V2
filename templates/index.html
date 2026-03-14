@@ -283,7 +283,13 @@ body:"query="+encodeURIComponent(query)
 .then(data=>{
 
 if(data.Message){
+
 document.getElementById("result").innerHTML="<h3>"+data.Message+"</h3>"
+
+if(data.voice){
+speak(data.voice)
+}
+
 return
 }
 
