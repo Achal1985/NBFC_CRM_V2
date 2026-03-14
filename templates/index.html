@@ -12,8 +12,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-/* GLOBAL */
-
 *{
 box-sizing:border-box;
 }
@@ -32,8 +30,6 @@ animation:gradientMove 12s ease infinite;
 100%{background-position:0% 50%;}
 }
 
-/* NAVBAR */
-
 .navbar{
 background:rgba(0,0,0,0.6);
 color:white;
@@ -49,8 +45,6 @@ flex-wrap:wrap;
 font-size:22px;
 font-weight:bold;
 }
-
-/* MAIN CONTAINER */
 
 .container{
 max-width:900px;
@@ -69,13 +63,12 @@ margin-bottom:30px;
 color:#1f4037;
 }
 
-/* SEARCH */
-
 .search-box{
 display:flex;
 justify-content:center;
 margin-bottom:20px;
 flex-wrap:wrap;
+width:100%;
 }
 
 .search-box input{
@@ -85,6 +78,7 @@ padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
 font-size:16px;
+width:100%;
 }
 
 .search-box button{
@@ -95,8 +89,6 @@ color:white;
 cursor:pointer;
 font-size:16px;
 }
-
-/* VOICE BUTTON */
 
 .voice-btn{
 margin-top:10px;
@@ -109,16 +101,12 @@ cursor:pointer;
 font-size:16px;
 }
 
-/* RESULT GRID */
-
 .result-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:15px;
 margin-top:25px;
 }
-
-/* CRM CARD */
 
 .crm-card{
 background:#ffffff;
@@ -146,13 +134,9 @@ font-weight:bold;
 color:#1f4037;
 }
 
-/* RESULT CARD WRAPPER */
-
 .result-card{
 margin-top:30px;
 }
-
-/* FOOTER */
 
 .footer{
 margin-top:50px;
@@ -161,31 +145,33 @@ color:white;
 padding-bottom:30px;
 }
 
-/* MOBILE */
+/* MOBILE FIX */
 
 @media (max-width:768px){
 
+.container{
+padding:25px;
+}
+
 .search-box{
 flex-direction:column;
+width:100%;
 }
-
-/* FIXED MOBILE INPUT */
 
 .search-box input{
-border-radius:8px;
-margin-bottom:10px;
+width:100%;
 font-size:13px;
 padding:10px;
+border-radius:8px;
+margin-bottom:10px;
 }
-
-/* ENSURE FULL PLACEHOLDER VISIBILITY */
 
 .search-box input::placeholder{
 font-size:12px;
-white-space:nowrap;
 }
 
 .search-box button{
+width:100%;
 border-radius:8px;
 }
 
@@ -231,16 +217,12 @@ RFL CRM AI System | Python + AI Voice Enabled Assistant
 
 <script>
 
-/* Load voices */
-
 let voices=[];
 let isSpeaking=false;
 
 window.speechSynthesis.onvoiceschanged=()=>{
 voices=speechSynthesis.getVoices();
 };
-
-/* Speak */
 
 function speak(text){
 
@@ -270,8 +252,6 @@ isSpeaking = false;
 speechSynthesis.speak(speech);
 
 }
-
-/* SEARCH */
 
 function searchCRM(){
 
@@ -328,8 +308,6 @@ document.getElementById("result").innerHTML=html;
 });
 
 }
-
-/* VOICE INPUT */
 
 function startVoice(){
 
