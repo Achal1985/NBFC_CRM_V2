@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 
@@ -176,30 +175,7 @@ color:white;
 text-align:center;
 }
 
-@media(max-width:768px){
-
-.search-box{
-flex-direction:column;
-}
-
-.search-box input{
-border-radius:8px;
-margin-bottom:10px;
-font-size:14px;
-}
-
-.search-box button{
-border-radius:8px;
-}
-
-.voice-btn{
-width:100%;
-}
-
-}
-
 </style>
-
 </head>
 
 <body>
@@ -245,7 +221,7 @@ placeholder="Enter Mobile / Loan Account / Customer ID">
 
 <div class="chat-input">
 
-<input id="chatInput" placeholder="Ask HelpDesk...">
+<input id="chatInput" placeholder="Ask HelpDesk question...">
 
 <button onclick="sendChat()">Send</button>
 
@@ -264,7 +240,21 @@ RFL CRM AI System | Python + Voice Assistant
 let customerData={}
 let communicationData={}
 
-/* TAB HIGHLIGHT FUNCTION */
+function speak(text){
+
+speechSynthesis.cancel()
+
+const speech=new SpeechSynthesisUtterance(text)
+
+if(/[\u0900-\u097F]/.test(text)){
+speech.lang="hi-IN"
+}else{
+speech.lang="en-IN"
+}
+
+speechSynthesis.speak(speech)
+
+}
 
 function activateTab(tabId){
 
@@ -276,16 +266,9 @@ document.getElementById(tabId).classList.add("active")
 
 }
 
-/* SEARCH FUNCTION */
-
 function searchCRM(){
 
 let query=document.getElementById("search").value.trim()
-
-if(query===""){
-alert("Please enter Mobile / Loan Account / Customer ID")
-return
-}
 
 fetch("/search",{
 method:"POST",
@@ -295,7 +278,7 @@ headers:{
 body:"query="+encodeURIComponent(query)
 })
 
-.then(response=>response.json())
+.then(res=>res.json())
 
 .then(data=>{
 
@@ -304,21 +287,33 @@ document.getElementById("result").innerHTML="<h3>"+data.Message+"</h3>"
 return
 }
 
+/* FIX BALANCE PRINCIPAL */
+
+let balancePrincipal =
+data["Balance Principal"] ||
+data["Balance_Principal"] ||
+data["Balance Principal Outstanding"] ||
+data["Balance Principal Amount"] ||
+"0";
+
+/* LOAN DATA */
+
 customerData={
 
 "Customer Name":data["Customer Name"],
-"Customer ID":data["Customer ID"],
-"Mobile":data["Mobile"],
 "Loan Account Number":data["Loan Account Number"],
 "Loan Amount":data["Loan Amount"],
+"E M I Amount":data["E M I Amount"],
 "Principal Outstanding":data["Principal Outstanding"],
 "Interest Outstanding":data["Interest Outstanding"],
+"Balance Principal":balancePrincipal,
 "Charges Outstanding":data["Charges Outstanding"],
 "Interest Rate":data["Interest Rate"],
-"EMI Amount":data["E M I Amount"],
 "Loan Status":data["Loan Status"]
 
 }
+
+/* COMMUNICATION DATA */
 
 communicationData={
 
@@ -331,49 +326,33 @@ communicationData={
 
 }
 
-showCustomer()
+/* VOICE */
 
-if(data.voice){
 speak(data.voice)
-}
+
+showCustomer()
 
 })
 
 }
 
-/* TAB FUNCTIONS */
-
 function showCustomer(){
-
 activateTab("tabCustomer")
-
 document.getElementById("helpdesk").style.display="none"
-
 renderCards(customerData)
-
 }
 
 function showCommunication(){
-
 activateTab("tabCommunication")
-
 document.getElementById("helpdesk").style.display="none"
-
 renderCards(communicationData)
-
 }
 
 function showHelpDesk(){
-
 activateTab("tabHelp")
-
 document.getElementById("result").innerHTML=""
-
 document.getElementById("helpdesk").style.display="block"
-
 }
-
-/* CARD RENDER */
 
 function renderCards(data){
 
@@ -396,11 +375,9 @@ document.getElementById("result").innerHTML=html
 
 }
 
-/* CHATBOT */
-
 function sendChat(){
 
-let input=document.getElementById("chatInput").value
+let input=document.getElementById("chatInput").value.toLowerCase()
 
 if(!input) return
 
@@ -408,7 +385,35 @@ let box=document.getElementById("chatBox")
 
 box.innerHTML+=`<div><b>You:</b> ${input}</div>`
 
-box.innerHTML+=`<div><b>Bot:</b> CRM HelpDesk received your query.</div>`
+let reply="Sorry, I could not find that information."
+
+if(input.includes("emi"))
+reply="EMI amount is "+customerData["E M I Amount"]
+
+else if(input.includes("loan amount"))
+reply="Loan amount is "+customerData["Loan Amount"]
+
+else if(input.includes("principal"))
+reply="Principal outstanding is "+customerData["Principal Outstanding"]
+
+else if(input.includes("interest"))
+reply="Interest outstanding is "+customerData["Interest Outstanding"]
+
+else if(input.includes("charges"))
+reply="Charges outstanding is "+customerData["Charges Outstanding"]
+
+else if(input.includes("address"))
+reply="Customer address is "+communicationData["Address"]
+
+else if(input.includes("gst"))
+reply="GST number is "+communicationData["GST Number"]
+
+else if(input.includes("email"))
+reply="Customer email is "+communicationData["Email ID"]
+
+box.innerHTML+=`<div><b>HelpDesk:</b> ${reply}</div>`
+
+speak(reply)
 
 document.getElementById("chatInput").value=""
 
@@ -416,23 +421,9 @@ box.scrollTop=box.scrollHeight
 
 }
 
-/* SPEAK */
-
-function speak(text){
-
-const speech=new SpeechSynthesisUtterance(text)
-speech.lang="hi-IN"
-
-speechSynthesis.speak(speech)
-
-}
-
-/* VOICE SEARCH */
-
 function startVoice(){
 
-const SpeechRecognition=
-window.SpeechRecognition || window.webkitSpeechRecognition
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
 
 const recognition=new SpeechRecognition()
 
@@ -440,9 +431,7 @@ recognition.lang="hi-IN"
 
 speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए")
 
-setTimeout(()=>{
-recognition.start()
-},2000)
+setTimeout(()=>{recognition.start()},2000)
 
 recognition.onresult=function(event){
 
