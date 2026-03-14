@@ -417,7 +417,7 @@ recognition.interimResults=false;
 
 document.querySelector(".voice-btn").classList.add("voice-active");
 
-speak("कृपया मोबाइल नंबर बोलिए");
+speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए");
 
 setTimeout(()=>{
 recognition.start();
@@ -427,13 +427,25 @@ recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript;
 
+/* Convert Hindi digits */
+
 const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
 
 for(let i=0;i<10;i++){
 transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i);
 }
 
-transcript=transcript.replace(/\D/g,'');
+/* Remove spaces */
+
+transcript=transcript.replace(/\s+/g,'');
+
+/* Convert to uppercase */
+
+transcript=transcript.toUpperCase();
+
+/* Keep only letters and numbers */
+
+transcript=transcript.replace(/[^A-Z0-9]/g,'');
 
 document.getElementById("search").value=transcript;
 
