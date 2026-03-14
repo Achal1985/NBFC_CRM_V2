@@ -175,27 +175,6 @@ color:white;
 text-align:center;
 }
 
-/* MOBILE TEXTBOX FIX */
-
-@media screen and (max-width:600px){
-
-.search-box{
-flex-direction:column;
-}
-
-.search-box input{
-border-radius:8px;
-margin-bottom:8px;
-font-size:16px;
-}
-
-.search-box button{
-width:100%;
-border-radius:8px;
-}
-
-}
-
 </style>
 </head>
 
@@ -308,12 +287,16 @@ document.getElementById("result").innerHTML="<h3>"+data.Message+"</h3>"
 return
 }
 
+/* FIX BALANCE PRINCIPAL */
+
 let balancePrincipal =
 data["Balance Principal"] ||
 data["Balance_Principal"] ||
 data["Balance Principal Outstanding"] ||
 data["Balance Principal Amount"] ||
 "0";
+
+/* LOAN DATA */
 
 customerData={
 
@@ -330,6 +313,8 @@ customerData={
 
 }
 
+/* COMMUNICATION DATA */
+
 communicationData={
 
 "Address":data["Address"],
@@ -340,6 +325,8 @@ communicationData={
 "GST Number":data["GST Number"]
 
 }
+
+/* VOICE */
 
 speak(data.voice)
 
