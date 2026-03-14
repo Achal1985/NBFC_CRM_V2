@@ -39,7 +39,7 @@ def search():
     if loan.empty:
         return jsonify({
             "Message": "Customer Not Found",
-            "voice": "ग्राहक की जानकारी नहीं मिली"
+            "voice": "Customer Not Found"
         })
 
     cust_id = loan.iloc[0]["Customer_ID"]
