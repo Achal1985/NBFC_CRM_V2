@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -38,7 +39,6 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 backdrop-filter:blur(10px);
-flex-wrap:wrap;
 }
 
 .logo{
@@ -67,18 +67,15 @@ color:#1f4037;
 display:flex;
 justify-content:center;
 margin-bottom:20px;
-flex-wrap:wrap;
 width:100%;
 }
 
 .search-box input{
 flex:1;
-min-width:200px;
 padding:14px;
 border-radius:8px 0 0 8px;
 border:1px solid #ccc;
 font-size:16px;
-width:100%;
 }
 
 .search-box button{
@@ -101,6 +98,26 @@ cursor:pointer;
 font-size:16px;
 }
 
+/* TABS */
+
+.tab-header{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:20px;
+font-weight:bold;
+}
+
+.tab{
+cursor:pointer;
+padding:10px 20px;
+border-bottom:3px solid transparent;
+}
+
+.active-tab{
+border-bottom:3px solid #1f4037;
+}
+
 .result-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -117,25 +134,15 @@ transition:0.3s;
 text-align:left;
 }
 
-.crm-card:hover{
-transform:translateY(-5px);
-box-shadow:0 10px 25px rgba(0,0,0,0.25);
-}
-
 .crm-title{
 font-size:14px;
 color:#666;
-margin-bottom:6px;
 }
 
 .crm-value{
 font-size:18px;
 font-weight:bold;
 color:#1f4037;
-}
-
-.result-card{
-margin-top:30px;
 }
 
 .footer{
@@ -145,8 +152,6 @@ color:white;
 padding-bottom:30px;
 }
 
-/* MOBILE FIX */
-
 @media (max-width:768px){
 
 .container{
@@ -155,23 +160,14 @@ padding:25px;
 
 .search-box{
 flex-direction:column;
-width:100%;
 }
 
 .search-box input{
-width:100%;
-font-size:13px;
-padding:10px;
 border-radius:8px;
 margin-bottom:10px;
 }
 
-.search-box input::placeholder{
-font-size:12px;
-}
-
 .search-box button{
-width:100%;
 border-radius:8px;
 }
 
@@ -207,6 +203,11 @@ width:100%;
 
 <button class="voice-btn" onclick="startVoice()">🎤 Hindi Voice Search</button>
 
+<div class="tab-header">
+<div id="tabCustomer" class="tab active-tab" onclick="showCustomer()">Customer Details</div>
+<div id="tabComm" class="tab" onclick="showCommunication()">Communication Details</div>
+</div>
+
 <div id="result"></div>
 
 </div>
@@ -220,6 +221,9 @@ RFL CRM AI System | Python + AI Voice Enabled Assistant
 let voices=[];
 let isSpeaking=false;
 
+let customerData={};
+let communicationData={};
+
 window.speechSynthesis.onvoiceschanged=()=>{
 voices=speechSynthesis.getVoices();
 };
@@ -227,31 +231,64 @@ voices=speechSynthesis.getVoices();
 function speak(text){
 
 const speech = new SpeechSynthesisUtterance(text);
+speech.lang="hi-IN";
 
-speech.lang = "hi-IN";
-
-let voice = speechSynthesis.getVoices().find(v => v.lang === "hi-IN");
-
-if(!voice){
-voice = speechSynthesis.getVoices().find(v => v.lang.includes("hi"));
-}
+let voice = speechSynthesis.getVoices().find(v=>v.lang==="hi-IN");
 
 if(voice){
-speech.voice = voice;
+speech.voice=voice;
 }
 
-speech.rate = 0.9;
-speech.pitch = 1.0;
-
-isSpeaking = true;
-
-speech.onend = function(){
-isSpeaking = false;
-};
+speech.rate=0.9;
 
 speechSynthesis.speak(speech);
 
 }
+
+/* RENDER CARDS */
+
+function renderCards(data){
+
+let html='<div class="result-grid">';
+
+for(let key in data){
+
+html+=`
+<div class="crm-card">
+<div class="crm-title">${key}</div>
+<div class="crm-value">${data[key]}</div>
+</div>
+`;
+
+}
+
+html+='</div>';
+
+document.getElementById("result").innerHTML=html;
+
+}
+
+/* TAB SWITCH */
+
+function showCustomer(){
+
+document.getElementById("tabCustomer").classList.add("active-tab");
+document.getElementById("tabComm").classList.remove("active-tab");
+
+renderCards(customerData);
+
+}
+
+function showCommunication(){
+
+document.getElementById("tabComm").classList.add("active-tab");
+document.getElementById("tabCustomer").classList.remove("active-tab");
+
+renderCards(communicationData);
+
+}
+
+/* SEARCH */
 
 function searchCRM(){
 
@@ -267,47 +304,48 @@ body:"query="+query
 .then(res=>res.json())
 .then(data=>{
 
-let html="";
-
 if(data.Message){
 
-html='<div class="result-card">'+data.Message+'</div>';
+document.getElementById("result").innerHTML=data.Message;
 speak(data.Message);
+return;
 
 }
 
-else{
-
-html='<div class="result-card"><div class="result-grid">';
+customerData={};
+communicationData={};
 
 for(let key in data){
 
-if(key!="voice"){
+if(key=="voice") continue;
 
-html+=`
-<div class="crm-card">
-<div class="crm-title">${key}</div>
-<div class="crm-value">${data[key]}</div>
-</div>
-`;
-
+if(
+key=="Address" ||
+key=="City" ||
+key=="State" ||
+key=="Pincode" ||
+key=="Email ID" ||
+key=="GST Number"
+){
+communicationData[key]=data[key];
+}
+else{
+customerData[key]=data[key];
 }
 
 }
 
-html+='</div></div>';
+showCustomer();
 
 if(data.voice){
 speak(data.voice);
 }
 
-}
-
-document.getElementById("result").innerHTML=html;
-
 });
 
 }
+
+/* VOICE SEARCH */
 
 function startVoice(){
 
@@ -328,6 +366,8 @@ recognition.lang="hi-IN";
 recognition.continuous=false;
 recognition.interimResults=false;
 
+/* VOICE PROMPT */
+
 speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए");
 
 setTimeout(()=>{
@@ -337,6 +377,8 @@ recognition.start();
 recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript;
+
+/* HINDI NUMBER CONVERSION */
 
 const hindiNums=['०','१','२','३','४','५','६','७','८','९'];
 
