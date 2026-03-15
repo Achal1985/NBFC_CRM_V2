@@ -6,7 +6,7 @@ from groq import Groq
 app = Flask(__name__)
 
 # Initialize Groq Client
-client = Groq(api_key="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")
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 file_path = os.path.join(os.path.dirname(__file__), "NBFC_CRM_Windows11_Chatbot.xlsx")
 
@@ -161,6 +161,8 @@ Loan Status : {row.get("Loan Status")}
 
     elif "loan amount" in question:
         return jsonify({"answer":row.get("Loan Amount","Loan amount not available")})
+    elif "thanks" in question or "thank you" in question:
+    return jsonify({"answer":"You're welcome. Let me know if you need more help."})
 
 
     # ===================================
@@ -181,12 +183,12 @@ Question:
 Answer shortly.
 """
 
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-            model="llama3-8b-8192"
-        )
+       chat_completion = client.chat.completions.create(
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    model="llama-3.1-8b-instant"
+)
 
         answer = chat_completion.choices[0].message.content
 
