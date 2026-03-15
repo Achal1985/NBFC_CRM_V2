@@ -345,9 +345,10 @@ function renderCards(data){
 
 let html='<div class="result-grid">'
 
-let allowedCustomer=[
-"Customer Name",
+let customerOrder=[
 "Loan Account Number",
+"Customer ID",
+"Customer Name",
 "Loan Amount",
 "E M I Amount",
 "Principal Outstanding",
@@ -358,28 +359,28 @@ let allowedCustomer=[
 "Loan Status"
 ]
 
-let allowedCommunication=[
+let communicationOrder=[
 "Address",
 "City",
 "State",
 "Pincode",
 "Mobile",
+"Email ID",
 "GST Number"
 ]
 
-for(let key in data){
+let order = currentTab==="customer" ? customerOrder : communicationOrder
 
-if(currentTab==="customer" && !allowedCustomer.includes(key)) continue
-if(currentTab==="communication" && !allowedCommunication.includes(key)) continue
-
+order.forEach(key=>{
+if(data[key]!==undefined){
 html+=`
 <div class="card">
 <div class="card-title">${key}</div>
 <div class="card-value">${data[key]}</div>
 </div>
 `
-
 }
+})
 
 html+='</div>'
 
