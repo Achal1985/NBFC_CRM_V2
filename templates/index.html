@@ -293,16 +293,12 @@ speak(data.voice)
 return
 }
 
-/* FIX BALANCE PRINCIPAL */
-
 let balancePrincipal =
 data["Balance Principal"] ||
 data["Balance_Principal"] ||
 data["Balance Principal Outstanding"] ||
 data["Balance Principal Amount"] ||
 "0";
-
-/* LOAN DATA */
 
 customerData={
 
@@ -319,9 +315,9 @@ customerData={
 
 }
 
-/* COMMUNICATION DATA */
-
 communicationData={
+
+"Mobile":data["Mobile"],
 
 "Address":data["Address"],
 "City":data["City"],
@@ -331,8 +327,6 @@ communicationData={
 "GST Number":data["GST Number"]
 
 }
-
-/* VOICE */
 
 speak(data.voice)
 
