@@ -5,18 +5,30 @@ from groq import Groq
 
 app = Flask(__name__)
 
-# Initialize Groq Client
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+# ==============================
+# SAFE GROQ CLIENT INITIALIZATION
+# ==============================
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+
+if GROQ_API_KEY:
+    client = Groq(api_key=GROQ_API_KEY)
+else:
+    print("WARNING: GROQ_API_KEY not found. AI service will be disabled.")
+    client = None
+
 
 file_path = os.path.join(os.path.dirname(__file__), "NBFC_CRM_Windows11_Chatbot.xlsx")
 
 customer_df = pd.read_excel(file_path, sheet_name="Customer_Master")
 loan_df = pd.read_excel(file_path, sheet_name="Loan_Details")
 
+
 # =================================
 # STORE LAST SEARCHED CUSTOMER DATA
 # =================================
 last_customer_data = {}
+
 
 @app.route("/")
 def home():
@@ -105,14 +117,15 @@ def search():
 @app.route("/aihelp", methods=["POST"])
 def aihelp():
 
-    question = request.form.get("question","").lower()
+    question = request.form.get("question", "").lower()
 
     global last_customer_data
 
     if not last_customer_data:
-        return jsonify({"answer":"Please search a customer first."})
+        return jsonify({"answer": "Please search a customer first."})
 
     row = last_customer_data
+
 
     # ===============================
     # FAST RESPONSES FROM EXCEL DATA
@@ -132,42 +145,45 @@ Interest Outstanding : {row.get("Interest Outstanding")}
 Loan Status : {row.get("Loan Status")}
 """
 
-        return jsonify({"answer":answer})
+        return jsonify({"answer": answer})
 
     elif "mobile" in question:
-        return jsonify({"answer":row.get("Mobile","Mobile not available")})
+        return jsonify({"answer": row.get("Mobile", "Mobile not available")})
 
     elif "address" in question:
-        return jsonify({"answer":row.get("Address","Address not available")})
+        return jsonify({"answer": row.get("Address", "Address not available")})
 
     elif "city" in question:
-        return jsonify({"answer":row.get("City","City not available")})
+        return jsonify({"answer": row.get("City", "City not available")})
 
     elif "state" in question:
-        return jsonify({"answer":row.get("State","State not available")})
+        return jsonify({"answer": row.get("State", "State not available")})
 
     elif "pincode" in question:
-        return jsonify({"answer":row.get("Pincode","Pincode not available")})
+        return jsonify({"answer": row.get("Pincode", "Pincode not available")})
 
     elif "gst" in question:
-        return jsonify({"answer":row.get("GST Number","GST not available")})
+        return jsonify({"answer": row.get("GST Number", "GST not available")})
 
     elif "email" in question:
-        return jsonify({"answer":row.get("Email ID","Email not available")})
+        return jsonify({"answer": row.get("Email ID", "Email not available")})
 
     elif "emi" in question:
-        return jsonify({"answer":row.get("E M I Amount","EMI not available")})
+        return jsonify({"answer": row.get("E M I Amount", "EMI not available")})
 
     elif "loan amount" in question:
-        return jsonify({"answer":row.get("Loan Amount","Loan amount not available")})
+        return jsonify({"answer": row.get("Loan Amount", "Loan amount not available")})
 
     elif "thanks" in question or "thank you" in question:
-        return jsonify({"answer":"You're welcome. Let me know if you need more help."})
+        return jsonify({"answer": "You're welcome. Let me know if you need more help."})
 
 
     # ===================================
     # IF NOT FOUND → CALL AI MODEL
     # ===================================
+
+    if client is None:
+        return jsonify({"answer": "AI service unavailable. API key not configured."})
 
     try:
 
@@ -192,10 +208,10 @@ Answer shortly.
 
         answer = chat_completion.choices[0].message.content
 
-        return jsonify({"answer":answer})
+        return jsonify({"answer": answer})
 
     except Exception as e:
-        return jsonify({"answer":"AI service unavailable"})
+        return jsonify({"answer": "AI service unavailable"})
 
 
 if __name__ == "__main__":
