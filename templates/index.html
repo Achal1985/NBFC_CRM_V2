@@ -318,7 +318,6 @@ customerData={
 communicationData={
 
 "Mobile":data["Mobile"],
-
 "Address":data["Address"],
 "City":data["City"],
 "State":data["State"],
@@ -411,6 +410,9 @@ reply="GST number is "+communicationData["GST Number"]
 else if(input.includes("email"))
 reply="Customer email is "+communicationData["Email ID"]
 
+else if(input.includes("mobile"))
+reply="Customer mobile number is "+communicationData["Mobile"]
+
 box.innerHTML+=`<div><b>HelpDesk:</b> ${reply}</div>`
 
 speak(reply)
@@ -418,42 +420,6 @@ speak(reply)
 document.getElementById("chatInput").value=""
 
 box.scrollTop=box.scrollHeight
-
-}
-
-function startVoice(){
-
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
-
-const recognition=new SpeechRecognition()
-
-recognition.lang="hi-IN"
-
-speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए")
-
-setTimeout(()=>{recognition.start()},3000)
-
-recognition.onresult=function(event){
-
-let transcript=event.results[0][0].transcript
-
-const hindiNums=['०','१','२','३','४','५','६','७','८','९']
-
-for(let i=0;i<10;i++){
-transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i)
-}
-
-transcript=transcript.replace(/\s+/g,'')
-transcript=transcript.toUpperCase()
-transcript=transcript.replace(/[^A-Z0-9]/g,'')
-
-document.getElementById("search").value=transcript
-
-recognition.stop()
-
-searchCRM()
-
-}
 
 }
 
