@@ -239,7 +239,6 @@ RFL CRM AI System | Python + Voice Assistant
 
 let customerData={}
 let communicationData={}
-let extraData={}
 
 function speak(text){
 
@@ -294,12 +293,16 @@ speak(data.voice)
 return
 }
 
+/* FIX BALANCE PRINCIPAL */
+
 let balancePrincipal =
 data["Balance Principal"] ||
 data["Balance_Principal"] ||
 data["Balance Principal Outstanding"] ||
 data["Balance Principal Amount"] ||
 "0";
+
+/* LOAN DATA */
 
 customerData={
 
@@ -316,6 +319,8 @@ customerData={
 
 }
 
+/* COMMUNICATION DATA */
+
 communicationData={
 
 "Mobile":data["Mobile"],
@@ -328,9 +333,7 @@ communicationData={
 
 }
 
-extraData={
-"Customer ID":data["Customer ID"]
-}
+/* VOICE */
 
 speak(data.voice)
 
@@ -389,7 +392,7 @@ let box=document.getElementById("chatBox")
 
 box.innerHTML+=`<div><b>You:</b> ${input}</div>`
 
-let reply="Sorry, I could not find that information."
+let reply=null
 
 if(input.includes("emi"))
 reply="EMI amount is "+customerData["E M I Amount"]
@@ -400,41 +403,14 @@ reply="Loan amount is "+customerData["Loan Amount"]
 else if(input.includes("principal"))
 reply="Principal outstanding is "+customerData["Principal Outstanding"]
 
-else if(input.includes("interest outstanding"))
+else if(input.includes("interest"))
 reply="Interest outstanding is "+customerData["Interest Outstanding"]
 
 else if(input.includes("charges"))
 reply="Charges outstanding is "+customerData["Charges Outstanding"]
 
-else if(input.includes("interest rate"))
-reply="Interest rate is "+customerData["Interest Rate"]
-
-else if(input.includes("loan status"))
-reply="Loan status is "+customerData["Loan Status"]
-
-else if(input.includes("loan account"))
-reply="Loan account number is "+customerData["Loan Account Number"]
-
-else if(input.includes("customer name"))
-reply="Customer name is "+customerData["Customer Name"]
-
-else if(input.includes("customer id"))
-reply="Customer ID is "+extraData["Customer ID"]
-
-else if(input.includes("mobile"))
-reply="Customer mobile number is "+communicationData["Mobile"]
-
 else if(input.includes("address"))
 reply="Customer address is "+communicationData["Address"]
-
-else if(input.includes("city"))
-reply="Customer city is "+communicationData["City"]
-
-else if(input.includes("state"))
-reply="Customer state is "+communicationData["State"]
-
-else if(input.includes("pincode"))
-reply="Customer pincode is "+communicationData["Pincode"]
 
 else if(input.includes("gst"))
 reply="GST number is "+communicationData["GST Number"]
@@ -442,15 +418,91 @@ reply="GST number is "+communicationData["GST Number"]
 else if(input.includes("email"))
 reply="Customer email is "+communicationData["Email ID"]
 
+if(reply===null){
+
+fetch("/aihelp",{
+method:"POST",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:"question="+encodeURIComponent(input)
+})
+.then(res=>res.json())
+.then(data=>{
+
+box.innerHTML+=`<div><b>HelpDesk AI:</b> ${data.answer}</div>`
+
+speak(data.answer)
+
+box.scrollTop=box.scrollHeight
+
+})
+
+}else{
+
 box.innerHTML+=`<div><b>HelpDesk:</b> ${reply}</div>`
 
 speak(reply)
+
+}
 
 document.getElementById("chatInput").value=""
 
 box.scrollTop=box.scrollHeight
 
 }
+
+function startVoice(){
+
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
+
+const recognition=new SpeechRecognition()
+
+recognition.lang="hi-IN"
+
+speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए")
+
+setTimeout(()=>{recognition.start()},3000)
+
+recognition.onresult=function(event){
+
+let transcript=event.results[0][0].transcript
+
+const hindiNums=['०','१','२','३','४','५','६','७','८','९']
+
+for(let i=0;i<10;i++){
+transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i)
+}
+
+transcript=transcript.replace(/\s+/g,'')
+transcript=transcript.toUpperCase()
+transcript=transcript.replace(/[^A-Z0-9]/g,'')
+
+document.getElementById("search").value=transcript
+
+recognition.stop()
+
+searchCRM()
+
+}
+
+}
+
+/* =============================
+ENTER KEY SUPPORT (NEW)
+============================= */
+
+document.getElementById("search").addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+searchCRM()
+}
+})
+
+document.getElementById("chatInput").addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+sendChat()
+}
+})
 
 </script>
 
