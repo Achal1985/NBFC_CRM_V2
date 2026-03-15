@@ -1,14 +1,22 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import os
+from groq import Groq
 
 app = Flask(__name__)
+
+# Initialize Groq Client
+client = Groq(api_key="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")
 
 file_path = os.path.join(os.path.dirname(__file__), "NBFC_CRM_Windows11_Chatbot.xlsx")
 
 customer_df = pd.read_excel(file_path, sheet_name="Customer_Master")
 loan_df = pd.read_excel(file_path, sheet_name="Loan_Details")
 
+# =================================
+# STORE LAST SEARCHED CUSTOMER DATA
+# =================================
+last_customer_data = {}
 
 @app.route("/")
 def home():
@@ -17,6 +25,8 @@ def home():
 
 @app.route("/search", methods=["POST"])
 def search():
+
+    global last_customer_data
 
     query = request.form.get("query")
 
@@ -61,7 +71,6 @@ def search():
         "E M I Amount": str(loan.iloc[0]["EMI_Amount"]),
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
-        # CUSTOMER COMMUNICATION DETAILS
         "Address": str(customer.iloc[0]["Address"]),
         "City": str(customer.iloc[0]["City"]),
         "State": str(customer.iloc[0]["State"]),
@@ -71,7 +80,7 @@ def search():
 
         "voice": f"""
         Welcome to RFL AI Enabled CRM Chatbot,मैं जल्द ही आपकी Loan Details बताऊंगी
-        ग्राहक का नाम {customer.iloc[0]['Customer_Name']} है।
+        Customer का नाम {customer.iloc[0]['Customer_Name']} है।
         लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
         E M I अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
         Principal Outstanding अमाउंट {loan.iloc[0]['Principal_Outstanding']} रुपये है।
@@ -80,11 +89,111 @@ def search():
         Charges Outstanding अमाउंट {loan.iloc[0]['Charges_Outstanding']} रुपये है।
         Interest Rate  {loan.iloc[0]['Interest_Rate']} percent है।
         लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
-        क्या आप कोई और जानकारी लेना चाहते हैं
+        अगर आपको कोई और जानकारी चाहिए तो AI enabled Helpdesk Tab पर जाएं
         """
     }
 
+    last_customer_data = data
+
     return jsonify(data)
+
+
+# ===============================
+# AI HELPDESK
+# ===============================
+
+@app.route("/aihelp", methods=["POST"])
+def aihelp():
+
+    question = request.form.get("question","").lower()
+
+    global last_customer_data
+
+    if not last_customer_data:
+        return jsonify({"answer":"Please search a customer first."})
+
+    row = last_customer_data
+
+    # ===============================
+    # FAST RESPONSES FROM EXCEL DATA
+    # ===============================
+
+    if "loan summary" in question:
+
+        answer = f"""
+Loan Summary
+
+Customer Name : {row.get("Customer Name")}
+Loan Account Number : {row.get("Loan Account Number")}
+Loan Amount : {row.get("Loan Amount")}
+EMI Amount : {row.get("E M I Amount")}
+Principal Outstanding : {row.get("Principal Outstanding")}
+Interest Outstanding : {row.get("Interest Outstanding")}
+Loan Status : {row.get("Loan Status")}
+"""
+
+        return jsonify({"answer":answer})
+
+
+    elif "mobile" in question:
+        return jsonify({"answer":row.get("Mobile","Mobile not available")})
+
+    elif "address" in question:
+        return jsonify({"answer":row.get("Address","Address not available")})
+
+    elif "city" in question:
+        return jsonify({"answer":row.get("City","City not available")})
+
+    elif "state" in question:
+        return jsonify({"answer":row.get("State","State not available")})
+
+    elif "pincode" in question:
+        return jsonify({"answer":row.get("Pincode","Pincode not available")})
+
+    elif "gst" in question:
+        return jsonify({"answer":row.get("GST Number","GST not available")})
+
+    elif "email" in question:
+        return jsonify({"answer":row.get("Email ID","Email not available")})
+
+    elif "emi" in question:
+        return jsonify({"answer":row.get("E M I Amount","EMI not available")})
+
+    elif "loan amount" in question:
+        return jsonify({"answer":row.get("Loan Amount","Loan amount not available")})
+
+
+    # ===================================
+    # IF NOT FOUND → CALL AI MODEL
+    # ===================================
+
+    try:
+
+        prompt = f"""
+You are an NBFC CRM helpdesk assistant.
+
+Customer Data:
+{row}
+
+Question:
+{question}
+
+Answer shortly.
+"""
+
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            model="llama3-8b-8192"
+        )
+
+        answer = chat_completion.choices[0].message.content
+
+        return jsonify({"answer":answer})
+
+    except Exception as e:
+        return jsonify({"answer":"AI service unavailable"})
 
 
 if __name__ == "__main__":
