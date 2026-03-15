@@ -93,6 +93,16 @@ border-radius:8px;
 cursor:pointer;
 }
 
+.help-voice-btn{
+margin-top:10px;
+padding:10px 18px;
+background:#ff6a00;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
 .tabs{
 display:flex;
 justify-content:center;
@@ -221,6 +231,10 @@ placeholder="Mobile/LAN/CustomerID">
 
 <div class="chat-box" id="chatBox"></div>
 
+<button class="help-voice-btn" onclick="startHelpVoice()">
+🎤 Voice Question
+</button>
+
 <div class="chat-input">
 
 <input id="chatInput" placeholder="Ask AI HelpDesk question...">
@@ -302,32 +316,8 @@ data["Balance Principal Outstanding"] ||
 data["Balance Principal Amount"] ||
 "0";
 
-customerData={
-
-"Customer Name":data["Customer Name"],
-"Loan Account Number":data["Loan Account Number"],
-"Loan Amount":data["Loan Amount"],
-"E M I Amount":data["E M I Amount"],
-"Principal Outstanding":data["Principal Outstanding"],
-"Interest Outstanding":data["Interest Outstanding"],
-"Balance Principal":balancePrincipal,
-"Charges Outstanding":data["Charges Outstanding"],
-"Interest Rate":data["Interest Rate"],
-"Loan Status":data["Loan Status"]
-
-}
-
-communicationData={
-
-"Mobile":data["Mobile"],
-"Address":data["Address"],
-"City":data["City"],
-"State":data["State"],
-"Pincode":data["Pincode"],
-"Email ID":data["Email ID"],
-"GST Number":data["GST Number"]
-
-}
+customerData=data
+communicationData=data
 
 speak(data.voice)
 
@@ -386,34 +376,6 @@ let box=document.getElementById("chatBox")
 
 box.innerHTML+=`<div><b>You:</b> ${input}</div>`
 
-let reply=null
-
-if(input.includes("emi"))
-reply="EMI amount is "+customerData["E M I Amount"]
-
-else if(input.includes("loan amount"))
-reply="Loan amount is "+customerData["Loan Amount"]
-
-else if(input.includes("principal"))
-reply="Principal outstanding is "+customerData["Principal Outstanding"]
-
-else if(input.includes("interest"))
-reply="Interest outstanding is "+customerData["Interest Outstanding"]
-
-else if(input.includes("charges"))
-reply="Charges outstanding is "+customerData["Charges Outstanding"]
-
-else if(input.includes("address"))
-reply="Customer address is "+communicationData["Address"]
-
-else if(input.includes("gst"))
-reply="GST number is "+communicationData["GST Number"]
-
-else if(input.includes("email"))
-reply="Customer email is "+communicationData["Email ID"]
-
-if(reply===null){
-
 fetch("/aihelp",{
 method:"POST",
 headers:{
@@ -432,21 +394,10 @@ box.scrollTop=box.scrollHeight
 
 })
 
-}else{
-
-box.innerHTML+=`<div><b>AI HelpDesk:</b> ${reply}</div>`
-
-speak(reply)
-
-}
-
 document.getElementById("chatInput").value=""
-
-box.scrollTop=box.scrollHeight
-
 }
 
-function startVoice(){
+function startHelpVoice(){
 
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
 
@@ -454,39 +405,21 @@ const recognition=new SpeechRecognition()
 
 recognition.lang="hi-IN"
 
-speak("कृपया मोबाइल नंबर, लोन अकाउंट नंबर या कस्टमर आईडी बोलिए")
+speak("कृपया अपना प्रश्न बोलिए")
 
-setTimeout(()=>{recognition.start()},3000)
+recognition.start()
 
 recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript
 
-const hindiNums=['०','१','२','३','४','५','६','७','८','९']
+document.getElementById("chatInput").value=transcript
 
-for(let i=0;i<10;i++){
-transcript=transcript.replace(new RegExp(hindiNums[i],'g'),i)
-}
-
-transcript=transcript.replace(/\s+/g,'')
-transcript=transcript.toUpperCase()
-transcript=transcript.replace(/[^A-Z0-9]/g,'')
-
-document.getElementById("search").value=transcript
-
-recognition.stop()
-
-searchCRM()
+sendChat()
 
 }
 
 }
-
-document.getElementById("search").addEventListener("keypress",function(e){
-if(e.key==="Enter"){
-searchCRM()
-}
-})
 
 document.getElementById("chatInput").addEventListener("keypress",function(e){
 if(e.key==="Enter"){
