@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 
@@ -176,6 +177,7 @@ text-align:center;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -209,7 +211,7 @@ placeholder="Mobile/LAN/CustomerID">
 
 <button id="tabCommunication" onclick="showCommunication()">Communication Details</button>
 
-<button id="tabHelp" onclick="showHelpDesk()">HelpDesk</button>
+<button id="tabHelp" onclick="showHelpDesk()">AI HelpDesk</button>
 
 </div>
 
@@ -221,7 +223,7 @@ placeholder="Mobile/LAN/CustomerID">
 
 <div class="chat-input">
 
-<input id="chatInput" placeholder="Ask HelpDesk question...">
+<input id="chatInput" placeholder="Ask AI HelpDesk question...">
 
 <button onclick="sendChat()">Send</button>
 
@@ -293,16 +295,12 @@ speak(data.voice)
 return
 }
 
-/* FIX BALANCE PRINCIPAL */
-
 let balancePrincipal =
 data["Balance Principal"] ||
 data["Balance_Principal"] ||
 data["Balance Principal Outstanding"] ||
 data["Balance Principal Amount"] ||
 "0";
-
-/* LOAN DATA */
 
 customerData={
 
@@ -319,8 +317,6 @@ customerData={
 
 }
 
-/* COMMUNICATION DATA */
-
 communicationData={
 
 "Mobile":data["Mobile"],
@@ -332,8 +328,6 @@ communicationData={
 "GST Number":data["GST Number"]
 
 }
-
-/* VOICE */
 
 speak(data.voice)
 
@@ -430,7 +424,7 @@ body:"question="+encodeURIComponent(input)
 .then(res=>res.json())
 .then(data=>{
 
-box.innerHTML+=`<div><b>HelpDesk AI:</b> ${data.answer}</div>`
+box.innerHTML+=`<div><b>AI HelpDesk:</b> ${data.answer}</div>`
 
 speak(data.answer)
 
@@ -440,7 +434,7 @@ box.scrollTop=box.scrollHeight
 
 }else{
 
-box.innerHTML+=`<div><b>HelpDesk:</b> ${reply}</div>`
+box.innerHTML+=`<div><b>AI HelpDesk:</b> ${reply}</div>`
 
 speak(reply)
 
@@ -487,10 +481,6 @@ searchCRM()
 }
 
 }
-
-/* =============================
-ENTER KEY SUPPORT (NEW)
-============================= */
 
 document.getElementById("search").addEventListener("keypress",function(e){
 if(e.key==="Enter"){
