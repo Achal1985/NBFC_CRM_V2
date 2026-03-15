@@ -255,6 +255,7 @@ RFL CRM AI System | Python + Voice Assistant
 
 let customerData={}
 let communicationData={}
+let currentTab="customer"
 
 function speak(text){
 
@@ -309,13 +310,6 @@ speak(data.voice)
 return
 }
 
-let balancePrincipal =
-data["Balance Principal"] ||
-data["Balance_Principal"] ||
-data["Balance Principal Outstanding"] ||
-data["Balance Principal Amount"] ||
-"0";
-
 customerData=data
 communicationData=data
 
@@ -329,12 +323,14 @@ showCustomer()
 
 function showCustomer(){
 activateTab("tabCustomer")
+currentTab="customer"
 document.getElementById("helpdesk").style.display="none"
 renderCards(customerData)
 }
 
 function showCommunication(){
 activateTab("tabCommunication")
+currentTab="communication"
 document.getElementById("helpdesk").style.display="none"
 renderCards(communicationData)
 }
@@ -349,7 +345,32 @@ function renderCards(data){
 
 let html='<div class="result-grid">'
 
+let allowedCustomer=[
+"Customer Name",
+"Loan Account Number",
+"Loan Amount",
+"E M I Amount",
+"Principal Outstanding",
+"Interest Outstanding",
+"Balance Principal",
+"Charges Outstanding",
+"Interest Rate",
+"Loan Status"
+]
+
+let allowedCommunication=[
+"Address",
+"City",
+"State",
+"Pincode",
+"Mobile",
+"GST Number"
+]
+
 for(let key in data){
+
+if(currentTab==="customer" && !allowedCustomer.includes(key)) continue
+if(currentTab==="communication" && !allowedCommunication.includes(key)) continue
 
 html+=`
 <div class="card">
