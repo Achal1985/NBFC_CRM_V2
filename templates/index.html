@@ -239,6 +239,7 @@ RFL CRM AI System | Python + Voice Assistant
 
 let customerData={}
 let communicationData={}
+let extraData={}
 
 function speak(text){
 
@@ -327,6 +328,10 @@ communicationData={
 
 }
 
+extraData={
+"Customer ID":data["Customer ID"]
+}
+
 speak(data.voice)
 
 showCustomer()
@@ -395,23 +400,47 @@ reply="Loan amount is "+customerData["Loan Amount"]
 else if(input.includes("principal"))
 reply="Principal outstanding is "+customerData["Principal Outstanding"]
 
-else if(input.includes("interest"))
+else if(input.includes("interest outstanding"))
 reply="Interest outstanding is "+customerData["Interest Outstanding"]
 
 else if(input.includes("charges"))
 reply="Charges outstanding is "+customerData["Charges Outstanding"]
 
+else if(input.includes("interest rate"))
+reply="Interest rate is "+customerData["Interest Rate"]
+
+else if(input.includes("loan status"))
+reply="Loan status is "+customerData["Loan Status"]
+
+else if(input.includes("loan account"))
+reply="Loan account number is "+customerData["Loan Account Number"]
+
+else if(input.includes("customer name"))
+reply="Customer name is "+customerData["Customer Name"]
+
+else if(input.includes("customer id"))
+reply="Customer ID is "+extraData["Customer ID"]
+
+else if(input.includes("mobile"))
+reply="Customer mobile number is "+communicationData["Mobile"]
+
 else if(input.includes("address"))
 reply="Customer address is "+communicationData["Address"]
+
+else if(input.includes("city"))
+reply="Customer city is "+communicationData["City"]
+
+else if(input.includes("state"))
+reply="Customer state is "+communicationData["State"]
+
+else if(input.includes("pincode"))
+reply="Customer pincode is "+communicationData["Pincode"]
 
 else if(input.includes("gst"))
 reply="GST number is "+communicationData["GST Number"]
 
 else if(input.includes("email"))
 reply="Customer email is "+communicationData["Email ID"]
-
-else if(input.includes("mobile"))
-reply="Customer mobile number is "+communicationData["Mobile"]
 
 box.innerHTML+=`<div><b>HelpDesk:</b> ${reply}</div>`
 
