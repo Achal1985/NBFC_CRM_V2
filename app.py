@@ -9,7 +9,7 @@ app = Flask(__name__)
 # SAFE GROQ CLIENT INITIALIZATION
 # ==============================
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY") or os.environ.get("RAILWAY_GROQ_API_KEY")
 
 if GROQ_API_KEY:
     client = Groq(api_key=GROQ_API_KEY)
