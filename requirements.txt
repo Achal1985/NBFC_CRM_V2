@@ -3,3 +3,4 @@ pandas
 gTTS
 openpyxl
 gunicorn
+groq
