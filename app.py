@@ -87,7 +87,7 @@ def search():
         Interest Outstanding अमाउंट {loan.iloc[0]['Interest_Outstanding']} रुपये है।
         Balance Principal अमाउंट {loan.iloc[0]['Balance_Principal']} रुपये है।
         Charges Outstanding अमाउंट {loan.iloc[0]['Charges_Outstanding']} रुपये है।
-        Interest Rate  {loan.iloc[0]['Interest_Rate']} percent है।
+        Interest Rate {loan.iloc[0]['Interest_Rate']} percent है।
         लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
         अगर आपको कोई और जानकारी चाहिए तो AI enabled Helpdesk Tab पर जाएं
         """
@@ -134,7 +134,6 @@ Loan Status : {row.get("Loan Status")}
 
         return jsonify({"answer":answer})
 
-
     elif "mobile" in question:
         return jsonify({"answer":row.get("Mobile","Mobile not available")})
 
@@ -161,8 +160,9 @@ Loan Status : {row.get("Loan Status")}
 
     elif "loan amount" in question:
         return jsonify({"answer":row.get("Loan Amount","Loan amount not available")})
+
     elif "thanks" in question or "thank you" in question:
-    return jsonify({"answer":"You're welcome. Let me know if you need more help."})
+        return jsonify({"answer":"You're welcome. Let me know if you need more help."})
 
 
     # ===================================
@@ -183,12 +183,12 @@ Question:
 Answer shortly.
 """
 
-       chat_completion = client.chat.completions.create(
-    messages=[
-        {"role": "user", "content": prompt}
-    ],
-    model="llama-3.1-8b-instant"
-)
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            model="llama-3.1-8b-instant"
+        )
 
         answer = chat_completion.choices[0].message.content
 
