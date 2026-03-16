@@ -154,6 +154,7 @@ Balance Principal {loan.iloc[0]['Balance_Principal']} रुपये है।
 Charges Outstanding {loan.iloc[0]['Charges_Outstanding']} रुपये है।
 Interest Rate {loan.iloc[0]['Interest_Rate']} percent है।
 Loan Status {loan.iloc[0]['Loan_Status']} है।
+For more information go to our AI enabled helpdesk tab
 """
     }
 
