@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import pandas as pd
 import os
 from groq import Groq
 
 app = Flask(__name__)
+app.secret_key = "crm_secret_key"
 
 # ==============================
 # SAFE GROQ CLIENT INITIALIZATION
@@ -23,56 +24,108 @@ file_path = os.path.join(os.path.dirname(__file__), "NBFC_CRM_Windows11_Chatbot.
 customer_df = pd.read_excel(file_path, sheet_name="Customer_Master")
 loan_df = pd.read_excel(file_path, sheet_name="Loan_Details")
 
-
 # =================================
 # STORE LAST SEARCHED CUSTOMER DATA
 # =================================
 last_customer_data = {}
 
 
+# ===============================
+# LOGIN PAGE
+# ===============================
+
 @app.route("/")
+def login():
+    return render_template("login.html")
+
+
+# ===============================
+# OTP VALIDATION
+# ===============================
+
+@app.route("/validate_otp", methods=["POST"])
+def validate_otp():
+
+    mobile = request.form.get("mobile")
+    otp = request.form.get("otp")
+
+    if otp == "123456":
+
+        session["mobile"] = mobile
+
+        return redirect(url_for("home"))
+
+    else:
+        return render_template("login.html", error="Invalid OTP")
+
+
+# ===============================
+# CRM DASHBOARD
+# ===============================
+
+@app.route("/dashboard")
 def home():
     return render_template("index.html")
 
+
+# ===============================
+# CUSTOMER SEARCH
+# ===============================
 
 @app.route("/search", methods=["POST"])
 def search():
 
     global last_customer_data
 
-    query = request.form.get("query")
+    query = request.form.get("query","").strip()
+    logged_mobile = session.get("mobile")
 
-    loan = loan_df[loan_df["Loan_Account_Number"].astype(str) == query]
+    loan = None
+    cust = None
 
-    if loan.empty:
-        cust = customer_df[customer_df["Mobile_Number"].astype(str) == query]
+    # SEARCH BY MOBILE
+    cust = customer_df[customer_df["Mobile_Number"].astype(str) == query]
 
-        if not cust.empty:
-            cust_id = cust.iloc[0]["Customer_ID"]
-            loan = loan_df[loan_df["Customer_ID"] == cust_id]
+    if not cust.empty:
+        cust_id = cust.iloc[0]["Customer_ID"]
+        loan = loan_df[loan_df["Customer_ID"] == cust_id]
 
-    if loan.empty:
+    # SEARCH BY LOAN ACCOUNT NUMBER
+    if cust.empty:
+        loan = loan_df[loan_df["Loan_Account_Number"].astype(str) == query]
+
+        if not loan.empty:
+            cust_id = loan.iloc[0]["Customer_ID"]
+            cust = customer_df[customer_df["Customer_ID"] == cust_id]
+
+    # SEARCH BY CUSTOMER ID
+    if cust.empty:
         cust = customer_df[customer_df["Customer_ID"].astype(str) == query]
 
         if not cust.empty:
             cust_id = cust.iloc[0]["Customer_ID"]
             loan = loan_df[loan_df["Customer_ID"] == cust_id]
 
-    if loan.empty:
+    if cust.empty or loan.empty:
         return jsonify({
             "Message": "Customer Not Found",
             "voice": "Customer Not Found"
         })
 
-    cust_id = loan.iloc[0]["Customer_ID"]
+    # SECURITY CHECK → only allow logged mobile data
+    if str(cust.iloc[0]["Mobile_Number"]) != str(logged_mobile):
+        return jsonify({
+            "Message": "Access Denied",
+            "voice": "आप केवल अपने मोबाइल नंबर की जानकारी देख सकते हैं"
+        })
 
-    customer = customer_df[customer_df["Customer_ID"] == cust_id]
+    cust_id = cust.iloc[0]["Customer_ID"]
 
     data = {
 
-        "Customer Name": str(customer.iloc[0]["Customer_Name"]),
+        "Customer Name": str(cust.iloc[0]["Customer_Name"]),
         "Customer ID": str(cust_id),
-        "Mobile": str(customer.iloc[0]["Mobile_Number"]),
+        "Mobile": str(cust.iloc[0]["Mobile_Number"]),
         "Loan Account Number": str(loan.iloc[0]["Loan_Account_Number"]),
         "Loan Amount": str(loan.iloc[0]["Loan_Amount"]),
         "Principal Outstanding": str(loan.iloc[0]["Principal_Outstanding"]),
@@ -83,32 +136,30 @@ def search():
         "E M I Amount": str(loan.iloc[0]["EMI_Amount"]),
         "Loan Status": str(loan.iloc[0]["Loan_Status"]),
 
-        "Address": str(customer.iloc[0]["Address"]),
-        "City": str(customer.iloc[0]["City"]),
-        "State": str(customer.iloc[0]["State"]),
-        "Pincode": str(customer.iloc[0]["Pincode"]),
-        "Email ID": str(customer.iloc[0]["Email_ID"]),
-        "GST Number": str(customer.iloc[0]["GST_Number"]),
+        "Address": str(cust.iloc[0]["Address"]),
+        "City": str(cust.iloc[0]["City"]),
+        "State": str(cust.iloc[0]["State"]),
+        "Pincode": str(cust.iloc[0]["Pincode"]),
+        "Email ID": str(cust.iloc[0]["Email_ID"]),
+        "GST Number": str(cust.iloc[0]["GST_Number"]),
 
         "voice": f"""
-        Welcome to RFL AI Enabled CRM Chatbot,मैं जल्द ही आपकी Loan Details बताऊंगी
-        Customer का नाम {customer.iloc[0]['Customer_Name']} है।
-        लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
-        E M I अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
-        Principal Outstanding अमाउंट {loan.iloc[0]['Principal_Outstanding']} रुपये है।
-        Interest Outstanding अमाउंट {loan.iloc[0]['Interest_Outstanding']} रुपये है।
-        Balance Principal अमाउंट {loan.iloc[0]['Balance_Principal']} रुपये है।
-        Charges Outstanding अमाउंट {loan.iloc[0]['Charges_Outstanding']} रुपये है।
-        Interest Rate {loan.iloc[0]['Interest_Rate']} percent है।
-        लोन स्टेटस {loan.iloc[0]['Loan_Status']} है।
-        अगर आपको कोई और जानकारी चाहिए तो AI enabled Helpdesk Tab पर जाएं
-        """
+Welcome to RFL AI Enabled CRM Chatbot.
+Customer का नाम {cust.iloc[0]['Customer_Name']} है।
+लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
+EMI अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
+Principal Outstanding {loan.iloc[0]['Principal_Outstanding']} रुपये है।
+Interest Outstanding {loan.iloc[0]['Interest_Outstanding']} रुपये है।
+Balance Principal {loan.iloc[0]['Balance_Principal']} रुपये है।
+Charges Outstanding {loan.iloc[0]['Charges_Outstanding']} रुपये है।
+Interest Rate {loan.iloc[0]['Interest_Rate']} percent है।
+Loan Status {loan.iloc[0]['Loan_Status']} है।
+"""
     }
 
     last_customer_data = data
 
     return jsonify(data)
-
 
 # ===============================
 # AI HELPDESK
@@ -126,11 +177,6 @@ def aihelp():
 
     row = last_customer_data
 
-
-    # ===============================
-    # FAST RESPONSES FROM EXCEL DATA
-    # ===============================
-
     if "loan summary" in question:
 
         answer = f"""
@@ -147,43 +193,8 @@ Loan Status : {row.get("Loan Status")}
 
         return jsonify({"answer": answer})
 
-    elif "mobile" in question:
-        return jsonify({"answer": row.get("Mobile", "Mobile not available")})
-
-    elif "address" in question:
-        return jsonify({"answer": row.get("Address", "Address not available")})
-
-    elif "city" in question:
-        return jsonify({"answer": row.get("City", "City not available")})
-
-    elif "state" in question:
-        return jsonify({"answer": row.get("State", "State not available")})
-
-    elif "pincode" in question:
-        return jsonify({"answer": row.get("Pincode", "Pincode not available")})
-
-    elif "gst" in question:
-        return jsonify({"answer": row.get("GST Number", "GST not available")})
-
-    elif "email" in question:
-        return jsonify({"answer": row.get("Email ID", "Email not available")})
-
-    elif "emi" in question:
-        return jsonify({"answer": row.get("E M I Amount", "EMI not available")})
-
-    elif "loan amount" in question:
-        return jsonify({"answer": row.get("Loan Amount", "Loan amount not available")})
-
-    elif "thanks" in question or "thank you" in question:
-        return jsonify({"answer": "You're welcome. Let me know if you need more help."})
-
-
-    # ===================================
-    # IF NOT FOUND → CALL AI MODEL
-    # ===================================
-
     if client is None:
-        return jsonify({"answer": "AI service unavailable. API key not configured."})
+        return jsonify({"answer": "AI service unavailable."})
 
     try:
 
@@ -210,7 +221,7 @@ Answer shortly.
 
         return jsonify({"answer": answer})
 
-    except Exception as e:
+    except:
         return jsonify({"answer": "AI service unavailable"})
 
 
