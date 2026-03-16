@@ -147,7 +147,7 @@ def search():
 Welcome to RFL AI Enabled CRM Chatbot.
 Customer का नाम {cust.iloc[0]['Customer_Name']} है।
 लोन अकाउंट नंबर {loan.iloc[0]['Loan_Account_Number']} है।
-EMI अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
+E M I अमाउंट {loan.iloc[0]['EMI_Amount']} रुपये है।
 Principal Outstanding {loan.iloc[0]['Principal_Outstanding']} रुपये है।
 Interest Outstanding {loan.iloc[0]['Interest_Outstanding']} रुपये है।
 Balance Principal {loan.iloc[0]['Balance_Principal']} रुपये है।
