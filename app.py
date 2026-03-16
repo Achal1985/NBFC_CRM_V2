@@ -213,8 +213,9 @@ Answer shortly.
 
         chat_completion = client.chat.completions.create(
             messages=[
-                {"role": "user", "content": prompt}
-            ],
+    {"role": "system", "content": "You are Neerja, the NBFC CRM helpdesk assistant. You help users with loan and customer queries."},
+    {"role": "user", "content": question}
+],
             model="llama-3.1-8b-instant"
         )
 
