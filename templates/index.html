@@ -43,6 +43,15 @@ font-size:22px;
 font-weight:bold;
 }
 
+.logout-btn{
+background:#ff3b3b;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:6px;
+cursor:pointer;
+}
+
 .container{
 max-width:900px;
 width:95%;
@@ -193,7 +202,13 @@ text-align:center;
 <body>
 
 <div class="navbar">
+
 <div class="logo">🏦 RFL CRM AI</div>
+
+<button class="logout-btn" onclick="logout()">
+<i class="fa fa-sign-out-alt"></i> Logout
+</button>
+
 </div>
 
 <div class="container">
@@ -256,6 +271,15 @@ RFL CRM AI System | Python + Voice Assistant
 let customerData={}
 let communicationData={}
 let currentTab="customer"
+
+function logout(){
+
+fetch("/logout")
+.then(()=>{
+window.location="/"
+})
+
+}
 
 function speak(text){
 
@@ -419,6 +443,41 @@ box.scrollTop=box.scrollHeight
 document.getElementById("chatInput").value=""
 }
 
+function startVoice(){
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+
+if(!SpeechRecognition){
+alert("Voice recognition not supported")
+return
+}
+
+const recognition = new SpeechRecognition()
+
+recognition.lang="hi-IN"
+recognition.interimResults=false
+recognition.maxAlternatives=1
+
+speak("कृपया मोबाइल नंबर बोलिए")
+
+setTimeout(()=>{
+recognition.start()
+},1500)
+
+recognition.onresult=function(event){
+
+let transcript = event.results[0][0].transcript
+
+let cleanNumber = transcript.replace(/[^0-9]/g,'')
+
+document.getElementById("search").value = cleanNumber
+
+searchCRM()
+
+}
+
+}
+
 function startHelpVoice(){
 
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
@@ -446,6 +505,12 @@ sendChat()
 document.getElementById("chatInput").addEventListener("keypress",function(e){
 if(e.key==="Enter"){
 sendChat()
+}
+})
+
+document.getElementById("search").addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+searchCRM()
 }
 })
 
