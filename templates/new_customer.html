@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RFL Loan AI Assistant</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -15,10 +15,11 @@ font-family:'Segoe UI';
 
 body{
 margin:0;
-height:100vh;
+height:100dvh;
 background:linear-gradient(135deg,#0f2027,#134e5e,#0f9b0f);
 background-size:400% 400%;
 animation:bgMove 12s ease infinite;
+display:flex;
 }
 
 @keyframes bgMove{
@@ -27,20 +28,19 @@ animation:bgMove 12s ease infinite;
 100%{background-position:0% 50%;}
 }
 
-/* FULL MOBILE APP UI */
+/* MAIN CONTAINER */
 .container{
 width:100%;
-height:100vh;
+height:100dvh;
 display:flex;
 flex-direction:column;
 background:rgba(255,255,255,0.08);
-backdrop-filter:blur(25px);
+backdrop-filter:blur(20px);
 }
 
-/* DESKTOP VIEW */
+/* DESKTOP */
 @media(min-width:600px){
 body{
-display:flex;
 justify-content:center;
 align-items:center;
 }
@@ -56,21 +56,19 @@ box-shadow:0 0 40px rgba(0,255,150,0.25);
 .header{
 background:rgba(0,166,125,0.95);
 color:#fff;
-padding:16px;
+padding:15px;
 text-align:center;
 font-weight:bold;
-font-size:16px;
 }
 
-/* CHAT AREA */
+/* CHAT */
 .chat-box{
 flex:1;
 overflow-y:auto;
 padding:12px;
-padding-bottom:90px;
 }
 
-/* MESSAGES */
+/* MESSAGE */
 .msg{
 margin:8px 0;
 display:flex;
@@ -78,42 +76,24 @@ display:flex;
 
 .bot{
 background:#fff;
-padding:10px 12px;
+padding:10px;
 border-radius:12px;
 max-width:80%;
-font-size:14px;
 }
 
 .user{
 margin-left:auto;
 background:#009e74;
 color:#fff;
-padding:10px 12px;
+padding:10px;
 border-radius:12px;
 max-width:80%;
-font-size:14px;
 }
 
-/* INPUT BAR FIXED */
+/* INPUT FIXED INSIDE FLEX */
 .input-area{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
 display:flex;
 background:rgba(0,0,0,0.5);
-backdrop-filter:blur(12px);
-padding-bottom:env(safe-area-inset-bottom);
-}
-
-/* CENTER INPUT ON DESKTOP */
-@media(min-width:600px){
-.input-area{
-max-width:420px;
-left:50%;
-transform:translateX(-50%);
-border-radius:0 0 25px 25px;
-}
 }
 
 input{
@@ -131,10 +111,9 @@ background:#00c896;
 border:none;
 color:#fff;
 padding:14px;
-cursor:pointer;
 }
 
-/* OPTIONS */
+/* BUTTONS */
 .option-btn{
 width:100%;
 margin-top:8px;
@@ -143,8 +122,6 @@ background:#00c896;
 border:none;
 color:#fff;
 border-radius:10px;
-cursor:pointer;
-font-size:14px;
 }
 
 /* UPLOAD */
@@ -153,7 +130,6 @@ background:#fff;
 padding:10px;
 border-radius:10px;
 margin-top:10px;
-font-size:14px;
 }
 </style>
 </head>
@@ -162,9 +138,7 @@ font-size:14px;
 
 <div class="container">
 
-<div class="header">
-🤖 RFL Loan AI Assistant
-</div>
+<div class="header">🤖 RFL Loan AI Assistant</div>
 
 <div id="chatBox" class="chat-box"></div>
 
