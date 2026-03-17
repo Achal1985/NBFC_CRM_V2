@@ -38,6 +38,15 @@ last_customer_data = {}
 def login():
     return render_template("login.html")
 
+@app.route('/login_existing')
+def login_existing():
+    return render_template('existing_login.html')
+
+@app.route('/new_customer')
+def new_customer():
+    return render_template('new_customer.html')
+
+
 
 # ===============================
 # OTP VALIDATION
@@ -213,9 +222,8 @@ Answer shortly.
 
         chat_completion = client.chat.completions.create(
             messages=[
-    {"role": "system", "content": "You are Neerja, the NBFC CRM helpdesk assistant. You help users with loan and customer queries."},
-    {"role": "user", "content": question}
-],
+                {"role": "user", "content": prompt}
+            ],
             model="llama-3.1-8b-instant"
         )
 
