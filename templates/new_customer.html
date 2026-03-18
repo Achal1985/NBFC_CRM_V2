@@ -143,7 +143,7 @@ margin-top:10px;
 <div id="chatBox" class="chat-box"></div>
 
 <div class="input-area">
-<input id="userInput" placeholder="Type 'hi' to start">
+<input id="userInput" placeholder="Type 'hi' to start" oninput="allowOnlyNumbers(this)">
 <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 
@@ -168,22 +168,23 @@ box().scrollTop=box().scrollHeight
 }
 
 function buttons(arr){
-arr.forEach(a=>{
-let btn=document.createElement("button")
-btn.className="option-btn"
-btn.innerText=a.text
-btn.onclick=a.action
-box().appendChild(btn)
-})
+    arr.forEach(a=>{
+        let btn=document.createElement("button")
+        btn.className="option-btn"
+        btn.innerText=a.text
+        btn.onclick=a.action
+        box().appendChild(btn)
+    })
+
+    box().scrollTop = box().scrollHeight; // ✅ force scroll
 }
 
 function selectEmployment(type){
-data.employment=type
-
-msg(type,"user")
-msg("💰 Enter Monthly Income:","bot")
-
-step="income"
+    data.employment=type
+    msg(type,"user")
+    msg("💰 Enter Monthly Income:","bot")
+    step="income"
+    focusInput();
 }
 
 function showFileName(input, id){
@@ -216,6 +217,34 @@ function lockChat(){
 
 }
 
+function showBusinessOptions(){
+
+    buttons([
+        {text:"Retail Shop", action:()=>selectBusiness("Retail Shop")},
+        {text:"Manufacturing", action:()=>selectBusiness("Manufacturing")},
+        {text:"IT Services", action:()=>selectBusiness("IT Services")},
+        {text:"Trading Business", action:()=>selectBusiness("Trading Business")},
+        {text:"Others", action:()=>enterCustomBusiness()}
+    ])
+
+    step="business_select"
+}
+
+function selectBusiness(name){
+    data.business = name
+    msg(name,"user")
+    msg("📅 Years in Business:","bot")
+    step="years"
+    focusInput();
+}
+
+function enterCustomBusiness(){
+    msg("Others","user")
+    msg("✍️ Enter Your Business Name:","bot")
+    step="business_manual"
+    focusInput();
+}
+
 function handleSubmit(btn){
 
     let pan = document.querySelector("input[onchange*='panFile']").files.length;
@@ -235,11 +264,32 @@ function handleSubmit(btn){
     underwriting();
 }
 
+
+function focusInput(){
+    let input = document.getElementById("userInput")
+    if(!input.disabled){
+        input.focus()
+    }
+}
+
+function allowOnlyNumbers(input){
+
+    if(step === "income" || step === "amount"){
+        // Remove non-numeric characters
+        input.value = input.value.replace(/[^0-9]/g, "");
+    }
+
+}
+
 function sendMessage(){
 let input=document.getElementById("userInput").value.trim()
 if(!input || document.getElementById("userInput").disabled) return
 
-msg(input,"user")
+if(step === "otp" || step === "aadhaar"){
+    msg("••••","user")   // Hide OTP
+} else {
+    msg(input,"user")
+}
 document.getElementById("userInput").value=""
 
 input = input.toUpperCase()
@@ -304,23 +354,25 @@ msg("🆔 Enter Aadhaar OTP (••••):","bot")
 step="aadhaar"
 }
 else if(step==="aadhaar"){
-if(input==="1111"){
-msg("🔐 KYC Completed","bot")
-msg("📊 Checking CIBIL Score...","bot")
+    if(input==="1111"){
+        msg("🔐 KYC Completed","bot")
+        msg("📊 Checking CIBIL Score...","bot")
 
-setTimeout(()=>{
-msg("✅ CIBIL Score: 750","bot")
-msg("🏢 Enter Business Name:","bot")
-step="business"
-},1000)
+        setTimeout(()=>{
+            msg("✅ CIBIL Score: 750","bot")
+            msg("🏢 Select Business Name:","bot")
 
-}else msg("❌ Invalid OTP","bot")
+            showBusinessOptions()
+
+        },1000)
+
+    }else msg("❌ Invalid OTP","bot")
 }
 
-else if(step==="business"){
-data.business=input
-msg("📅 Years in Business:","bot")
-step="years"
+else if(step==="business_manual"){
+    data.business = input
+    msg("📅 Years in Business:","bot")
+    step="years"
 }
 
 else if(step==="years"){
@@ -343,31 +395,43 @@ step="income"
 }
 
 else if(step==="income"){
-data.income=parseInt(input)
-msg("💰 Enter Loan Amount:","bot")
-step="amount"
+
+    if(!/^[0-9]+$/.test(input) || parseInt(input) <= 0){
+        msg("❌ Enter valid income (numbers only & > 0)","bot")
+        return
+    }
+
+    data.income = parseInt(input)
+    msg("💰 Enter Loan Amount:","bot")
+    step="amount"
 }
 
 else if(step==="amount"){
-let eligible=data.income*10
 
-if(parseInt(input)<=eligible){
-msg("✅ Eligible","bot")
-msg("🎯 Loan Offer: ₹"+eligible,"bot")
-msg("📄 Valid Upload Documents","bot")
-offer()
-}else{
-msg("❌ Not Eligible, enter lower amount","bot")
-}
-}
+    if(!/^[0-9]+$/.test(input) || parseInt(input) <= 0){
+        msg("❌ Enter valid loan amount (numbers only & > 0)","bot")
+        return
+    }
 
+    let eligible = data.income * 10
+
+    if(parseInt(input) <= eligible){
+        msg("✅ Eligible","bot")
+        msg("🎯 Loan Offer: ₹" + eligible,"bot")
+        msg("📄 Valid Upload Documents","bot")
+        offer()
+    }else{
+        msg("❌ Not Eligible, enter lower amount","bot")
+    }
+}
 }
 
 function selectLoan(type){
-data.product=type
-msg(type,"user")
-msg("Enter Full Name:","bot")
-step="name"
+    data.product=type
+    msg(type,"user")
+    msg("Enter Full Name:","bot")
+    step="name"
+    focusInput();
 }
 
 function offer(){
@@ -395,6 +459,7 @@ Bank Statement:<br>
 `
 
 box().appendChild(div)
+box().scrollTop = box().scrollHeight;
 
 }
 
