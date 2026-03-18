@@ -558,41 +558,54 @@ document.getElementById("loanForm").style.display="block"
 
 function processLoan(){
 
-let pan=document.getElementById("pan").value
-let mobile=document.getElementById("loanMobile").value
+    let pan = document.getElementById("pan").value.trim().toUpperCase()
+    let mobile = document.getElementById("loanMobile").value.trim()
 
-if(!pan || !mobile){
-alert("Please enter PAN and Mobile")
-return
-}
+    // ✅ PAN Validation (ABCDE1234F)
+    let panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
 
-document.getElementById("loanForm").style.display="none"
-document.getElementById("aadhaarOTP").style.display="block"
+    if(!panRegex.test(pan)){
+        alert("❌ Invalid PAN Format (Example: ABCDE1234F)")
+        return
+    }
 
-speak("कृपया आधार ओटीपी दर्ज करें")
+    // ✅ Mobile Validation (10 digit only)
+    if(!/^[0-9]{10}$/.test(mobile)){
+        alert("❌ Invalid Mobile Number (Enter 10 digits)")
+        return
+    }
 
+    // Save formatted PAN
+    document.getElementById("pan").value = pan
 
+    document.getElementById("loanForm").style.display="none"
+    document.getElementById("aadhaarOTP").style.display="block"
 
+    speak("कृपया आधार ओटीपी दर्ज करें")
 }
 
 function verifyOTP(){
 
-let otp=document.getElementById("otpInput").value
+    let otpField = document.getElementById("otpInput")
+    let otp = otpField.value
 
-if(otp==="123456"){
+    if(otp === "123456"){
 
-document.getElementById("aadhaarOTP").style.display="none"
-document.getElementById("loanSuccess").style.display="block"
+        // ✅ Clear OTP immediately after use
+        otpField.value = ""
 
-speak("25 लाख रुपये आपके खाते में जमा कर दिए गए हैं धन्यवाद")
+        document.getElementById("aadhaarOTP").style.display="none"
+        document.getElementById("loanSuccess").style.display="block"
 
-}else{
+        speak("25 लाख रुपये आपके खाते में जमा कर दिए गए हैं धन्यवाद")
 
-alert("Invalid OTP")
-speak("गलत ओटीपी, कृपया पुनः प्रयास करें")
+    }else{
 
-}
+        otpField.value = "" // ✅ clear wrong OTP also
+        alert("Invalid OTP")
+        speak("गलत ओटीपी, कृपया पुनः प्रयास करें")
 
+    }
 }
 
 </script>
@@ -612,9 +625,16 @@ speak("गलत ओटीपी, कृपया पुनः प्रया�
 
 <div id="loanForm" style="display:none;">
 
-<input type="text" id="pan" placeholder="Enter PAN Number" style="width:100%; padding:10px; margin:5px 0;"><br>
+<input type="text" id="pan" placeholder="Enter PAN Number"
+maxlength="10"
+oninput="this.value=this.value.toUpperCase()"
+style="width:100%; padding:10px; margin:5px 0;"><br>
 
-<input type="text" id="loanMobile" placeholder="Enter Mobile Number" style="width:100%; padding:10px; margin:5px 0;"><br>
+<input type="text" id="loanMobile" placeholder="Enter Mobile Number"
+maxlength="10"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+style="width:100%; padding:10px; margin:5px 0;"><br>
 
 <button onclick="processLoan()">Proceed</button>
 
@@ -624,7 +644,8 @@ speak("गलत ओटीपी, कृपया पुनः प्रया�
 
 <h4>Aadhaar Verification</h4>
 
-<input type="text" id="otpInput" placeholder="Enter Aadhaar OTP" 
+<input type="password" id="otpInput" placeholder="Enter Aadhaar OTP"
+maxlength="6" inputmode="numeric"
 style="width:100%; padding:10px; margin:5px 0;"><br>
 
 <button onclick="verifyOTP()">Verify OTP</button>
