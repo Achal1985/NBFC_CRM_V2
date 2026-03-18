@@ -324,17 +324,40 @@ setTimeout(()=>msg("🏦 Disbursement Initiated","bot"),1000)
 setTimeout(()=>msg("💰 Amount Credited","bot"),2000)
 
 setTimeout(()=>{
+
 let acc="RFL"+Math.floor(Math.random()*100000000)
+
 msg("📊 Loan Account Created: "+acc,"bot")
 msg("🎉 Your "+data.product+" is successfully disbursed.","bot")
-},3000)
-}
+
+// ✅ Final Thank You Message
+msg("🙏 Thanks for choosing RFL - "+data.product,"bot")
+
+// ❌ Disable input
+document.getElementById("userInput").disabled = true
+
+// ❌ Disable send button
+document.querySelector(".input-area button").disabled = true
+
+// ✅ Add Go Back Button
+let btn=document.createElement("button")
+btn.className="option-btn"
+btn.innerText="⬅ Go Back to Login"
+btn.onclick=goToLogin
+
+box().appendChild(btn)
+
+},3000)}
 
 document.getElementById("userInput").addEventListener("keypress",function(e){
 if(e.key==="Enter"){
 sendMessage()
 }
 })
+
+function goToLogin(){
+window.location.href="/"
+}
 
 </script>
 
