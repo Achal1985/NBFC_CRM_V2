@@ -186,13 +186,38 @@ msg("💰 Enter Monthly Income:","bot")
 step="income"
 }
 
+function showFileName(input, id){
+    if(input.files.length > 0){
+        document.getElementById(id).innerText = "✅ " + input.files[0].name;
+    }
+}
+
+function lockChat(){
+    // Disable input
+    document.getElementById("userInput").disabled = true;
+
+    // Disable send button
+    document.querySelector(".input-area button").disabled = true;
+
+    // Disable all option buttons
+    document.querySelectorAll(".option-btn").forEach(btn=>{
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        btn.style.cursor = "not-allowed";
+    });
+
+   
+}
+
+
 function sendMessage(){
 let input=document.getElementById("userInput").value.trim()
-if(!input) return
+if(!input || document.getElementById("userInput").disabled) return
 
 msg(input,"user")
 document.getElementById("userInput").value=""
 
+input = input.toUpperCase()
 flow(input)
 }
 
@@ -223,6 +248,13 @@ step="mobile"
 }
 
 else if(step==="mobile"){
+
+if(!/^[0-9]{10}$/.test(input)){
+msg("❌ Invalid Mobile Number. Enter 10 digit number","bot")
+return
+}
+
+data.mobile=input
 msg("📲 Enter OTP (••••):","bot")
 step="otp"
 }
@@ -236,11 +268,16 @@ step="pan"
 }
 
 else if(step==="pan"){
+
+if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(input)){
+msg("❌ Invalid PAN Format (Example: ABCDE1234F)","bot")
+return
+}
+
 data.pan=input
 msg("🆔 Enter Aadhaar OTP (••••):","bot")
 step="aadhaar"
 }
-
 else if(step==="aadhaar"){
 if(input==="1111"){
 msg("🔐 KYC Completed","bot")
@@ -313,11 +350,23 @@ let div=document.createElement("div")
 div.className="upload-box"
 
 div.innerHTML=`
-PAN Card<br>
-Aadhaar Card<br>
-Bank Statement<br><br>
-<input type="file"><br><br>
+
+<b>📄 Valid Upload Documents</b><br><br>
+
+PAN Card:<br>
+<input type="file" onchange="showFileName(this,'panFile')">
+<div id="panFile" style="font-size:12px;color:green;"></div><br>
+
+Aadhaar Card:<br>
+<input type="file" onchange="showFileName(this,'aadhaarFile')">
+<div id="aadhaarFile" style="font-size:12px;color:green;"></div><br>
+
+Bank Statement:<br>
+<input type="file" onchange="showFileName(this,'bankFile')">
+<div id="bankFile" style="font-size:12px;color:green;"></div><br>
+
 <button onclick="underwriting()" class="option-btn">Submit</button>
+
 `
 
 box().appendChild(div)
@@ -361,6 +410,7 @@ document.getElementById("userInput").disabled = true
 // ❌ Disable send button
 document.querySelector(".input-area button").disabled = true
 
+lockChat()
 // ✅ Add Go Back Button
 let btn=document.createElement("button")
 btn.className="option-btn"
