@@ -193,7 +193,8 @@ function showFileName(input, id){
 }
 
 function lockChat(){
-    // Disable input
+
+    // Disable text input
     document.getElementById("userInput").disabled = true;
 
     // Disable send button
@@ -206,9 +207,33 @@ function lockChat(){
         btn.style.cursor = "not-allowed";
     });
 
-   
+    // ✅ NEW: Disable all file inputs
+    document.querySelectorAll("input[type='file']").forEach(file=>{
+        file.disabled = true;
+        file.style.opacity = "0.5";
+        file.style.cursor = "not-allowed";
+    });
+
 }
 
+function handleSubmit(btn){
+
+    let pan = document.querySelector("input[onchange*='panFile']").files.length;
+    let aadhaar = document.querySelector("input[onchange*='aadhaarFile']").files.length;
+    let bank = document.querySelector("input[onchange*='bankFile']").files.length;
+
+    if(pan === 0 || aadhaar === 0 || bank === 0){
+        msg("❌ Please upload all required documents before submitting","bot");
+        return;
+    }
+
+    // ✅ Disable button after click
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.style.cursor = "not-allowed";
+
+    underwriting();
+}
 
 function sendMessage(){
 let input=document.getElementById("userInput").value.trim()
@@ -365,27 +390,39 @@ Bank Statement:<br>
 <input type="file" onchange="showFileName(this,'bankFile')">
 <div id="bankFile" style="font-size:12px;color:green;"></div><br>
 
-<button onclick="underwriting()" class="option-btn">Submit</button>
+<button onclick="handleSubmit(this)" class="option-btn">Submit</button>
 
 `
 
 box().appendChild(div)
+
 }
 
+
 function underwriting(){
-msg("🧠 Underwriting in Progress...","bot")
 
-setTimeout(()=>{
-msg("✅ Loan Approved","bot")
-msg("📄 Accept Agreement","bot")
+    let pan = document.querySelector("input[onchange*='panFile']").files.length;
+    let aadhaar = document.querySelector("input[onchange*='aadhaarFile']").files.length;
+    let bank = document.querySelector("input[onchange*='bankFile']").files.length;
 
-let btn=document.createElement("button")
-btn.className="option-btn"
-btn.innerText="Accept Agreement"
-btn.onclick=esign
-box().appendChild(btn)
+    if(pan === 0 || aadhaar === 0 || bank === 0){
+        msg("❌ Please upload all required documents (PAN, Aadhaar, Bank Statement)","bot");
+        return;
+    }
 
-},2000)
+    msg("🧠 Underwriting in Progress...","bot");
+
+    setTimeout(()=>{
+        msg("✅ Loan Approved","bot")
+        msg("📄 Accept Agreement","bot")
+
+        let btn=document.createElement("button")
+        btn.className="option-btn"
+        btn.innerText="Accept Agreement"
+        btn.onclick=esign
+        box().appendChild(btn)
+
+    },2000)
 }
 
 function esign(){
