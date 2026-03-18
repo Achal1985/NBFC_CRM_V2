@@ -177,6 +177,15 @@ box().appendChild(btn)
 })
 }
 
+function selectEmployment(type){
+data.employment=type
+
+msg(type,"user")
+msg("💰 Enter Monthly Income:","bot")
+
+step="income"
+}
+
 function sendMessage(){
 let input=document.getElementById("userInput").value.trim()
 if(!input) return
@@ -253,6 +262,19 @@ step="years"
 }
 
 else if(step==="years"){
+data.years=input
+
+msg("💼 Select Employment Status:","bot")
+
+buttons([
+{text:"Salaried",action:()=>selectEmployment("Salaried")},
+{text:"Self Employed",action:()=>selectEmployment("Self Employed")}
+])
+
+step="employment"
+}
+
+else if(step==="employment"){
 data.years=input
 msg("💼 Enter Monthly Income:","bot")
 step="income"
