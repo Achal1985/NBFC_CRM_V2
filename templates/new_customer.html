@@ -138,7 +138,10 @@ margin-top:10px;
 
 <div class="container">
 
-<div class="header">🤖 RFL Loan ChatBot</div>
+<div class="header">
+🤖 RFL Loan ChatBot
+<button onclick="toggleVoice()" style="float:right;">🔊</button>
+</div>
 
 <div id="chatBox" class="chat-box"></div>
 
@@ -153,18 +156,40 @@ margin-top:10px;
 
 let step="start"
 let data={}
+let speechQueue = [];
+let isSpeaking = false;
 
 function box(){ return document.getElementById("chatBox") }
 
 function msg(text,type){
-let d=document.createElement("div")
-d.className="msg"
-let b=document.createElement("div")
-b.className=type
-b.innerHTML=text
-d.appendChild(b)
-box().appendChild(d)
-box().scrollTop=box().scrollHeight
+
+    let d=document.createElement("div")
+    d.className="msg"
+
+    let b=document.createElement("div")
+    b.className=type
+    b.innerHTML=text
+
+    d.appendChild(b)
+    box().appendChild(d)
+
+    box().scrollTop=box().scrollHeight
+
+    if(type === "bot"){
+        waitAndSpeak(text)
+    }
+}
+
+function waitAndSpeak(text){
+
+    let check = setInterval(()=>{
+
+        if(!speaking){
+            clearInterval(check);
+            speak(text);
+        }
+
+    }, 300);
 }
 
 function buttons(arr){
@@ -172,13 +197,16 @@ function buttons(arr){
         let btn=document.createElement("button")
         btn.className="option-btn"
         btn.innerText=a.text
-        btn.onclick=a.action
+
+      btn.onclick=()=>{
+    a.action()   // only call action
+}
+
         box().appendChild(btn)
     })
 
-    box().scrollTop = box().scrollHeight; // ✅ force scroll
+    box().scrollTop = box().scrollHeight;
 }
-
 function selectEmployment(type){
     data.employment=type
     msg(type,"user")
@@ -189,7 +217,10 @@ function selectEmployment(type){
 
 function showFileName(input, id){
     if(input.files.length > 0){
-        document.getElementById(id).innerText = "✅ " + input.files[0].name;
+        let name = input.files[0].name;
+        document.getElementById(id).innerText = "✅ " + name;
+
+        speak("File uploaded " + name);
     }
 }
 
@@ -215,6 +246,87 @@ function lockChat(){
         file.style.cursor = "not-allowed";
     });
 
+}
+
+function toggleVoice(){
+    voiceEnabled = !voiceEnabled;
+    alert(voiceEnabled ? "Voice ON" : "Voice OFF");
+}
+
+function processQueue(){
+
+    if(isSpeaking || messageQueue.length === 0) return;
+
+    isSpeaking = true;
+
+    let item = messageQueue.shift();
+
+    // Show message
+    let d=document.createElement("div")
+    d.className="msg"
+
+    let b=document.createElement("div")
+    b.className=item.type
+    b.innerHTML=item.text
+
+    d.appendChild(b)
+    box().appendChild(d)
+    box().scrollTop=box().scrollHeight
+
+    // If bot → speak with delay
+    if(item.type === "bot"){
+
+        setTimeout(()=>{
+
+            speak(item.text);
+
+            // Wait until speech ends
+            let checkSpeech = setInterval(()=>{
+                if(!window.speechSynthesis.speaking){
+                    clearInterval(checkSpeech);
+                    isSpeaking = false;
+                    processQueue(); // next message
+                }
+            }, 300);
+
+        }, 500); // delay before speaking
+
+    } else {
+        // user message → small delay
+        setTimeout(()=>{
+            isSpeaking = false;
+            processQueue();
+        }, 300);
+    }
+}
+
+function botSequence(messages, delay = 1200){
+
+    let i = 0;
+
+    function next(){
+
+        if(i >= messages.length) return;
+
+        msg(messages[i], "bot");
+        i++;
+
+        setTimeout(next, delay);
+    }
+
+    next();
+}
+
+function waitForSpeechEnd(callback){
+
+    let check = setInterval(()=>{
+
+        if(!window.speechSynthesis.speaking){
+            clearInterval(check);
+            setTimeout(callback, 300); // small natural delay
+        }
+
+    }, 200);
 }
 
 function showBusinessOptions(){
@@ -491,37 +603,33 @@ function underwriting(){
 }
 
 function esign(){
-msg("✍️ eSign Completed","bot")
 
-setTimeout(()=>msg("🏦 Disbursement Initiated","bot"),1000)
-setTimeout(()=>msg("💰 Amount Credited","bot"),2000)
+    msg("✍️ eSign Completed","bot")
+    msg("🏦 Disbursement Initiated","bot")
+    msg("💰 Amount Credited","bot")
 
-setTimeout(()=>{
+    let acc="RFL"+Math.floor(Math.random()*100000000)
 
-let acc="RFL"+Math.floor(Math.random()*100000000)
+    msg("📊 Loan Account Created: "+acc,"bot")
+    msg("🎉 Your "+data.product+" is successfully disbursed.","bot")
+    msg("🙏 Thanks for choosing RFL - "+data.product,"bot")
 
-msg("📊 Loan Account Created: "+acc,"bot")
-msg("🎉 Your "+data.product+" is successfully disbursed.","bot")
+    document.getElementById("userInput").disabled = true
+    document.querySelector(".input-area button").disabled = true
 
-// ✅ Final Thank You Message
-msg("🙏 Thanks for choosing RFL - "+data.product,"bot")
+    lockChat()
 
-// ❌ Disable input
-document.getElementById("userInput").disabled = true
+    let btn=document.createElement("button")
+    btn.className="option-btn"
+    btn.innerText="⬅ Go Back to Login"
+    btn.onclick=goToLogin
 
-// ❌ Disable send button
-document.querySelector(".input-area button").disabled = true
+    box().appendChild(btn)
+}
+    }
 
-lockChat()
-// ✅ Add Go Back Button
-let btn=document.createElement("button")
-btn.className="option-btn"
-btn.innerText="⬅ Go Back to Login"
-btn.onclick=goToLogin
-
-box().appendChild(btn)
-
-},3000)}
+    nextStep();
+}
 
 document.getElementById("userInput").addEventListener("keypress",function(e){
 if(e.key==="Enter"){
@@ -531,6 +639,52 @@ sendMessage()
 
 function goToLogin(){
 window.location.href="/"
+}
+
+let voiceEnabled = true;
+
+let speaking = false;
+
+function speak(text){
+
+    if(!voiceEnabled) return;
+
+    // Clean text
+    let cleanText = text
+        .replace(/<[^>]*>/g, "")
+        .replace(/\(.*?•+.*?\)/g, "")
+        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if(!cleanText) return;
+
+    // Add to queue
+    speechQueue.push(cleanText);
+
+    processSpeechQueue();
+}
+
+function processSpeechQueue(){
+
+    if(isSpeaking || speechQueue.length === 0) return;
+
+    isSpeaking = true;
+
+    const text = speechQueue.shift();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    speech.lang = "en-IN";
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    speech.onend = () => {
+        isSpeaking = false;
+        processSpeechQueue(); // next message
+    };
+
+    window.speechSynthesis.speak(speech);
 }
 
 </script>
