@@ -138,18 +138,28 @@ margin-top:10px;
 
 <div class="container">
 
-<div class="header">🤖 RFL Loan ChatBot</div>
+<div class="header">
+🤖 RFL Loan ChatBot
+<button onclick="toggleVoice()" style="float:right;">🔊</button>
+</div>
 
 <div id="chatBox" class="chat-box"></div>
 
 <div class="input-area">
-<input id="userInput" placeholder="Type 'hi' to start" oninput="allowOnlyNumbers(this)">
-<button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+<input id="userInput"
+       placeholder="Type 'hi' to start"
+       oninput="allowOnlyNumbers(this)"
+       enterkeyhint="send"
+       autocomplete="off">
+<button onclick="sendMessage()" ontouchstart="sendMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 
 </div>
 
 <script>
+window.onload = function(){
+    focusInput();
+}
 
 let step="start"
 let data={}
@@ -157,14 +167,22 @@ let data={}
 function box(){ return document.getElementById("chatBox") }
 
 function msg(text,type){
-let d=document.createElement("div")
-d.className="msg"
-let b=document.createElement("div")
-b.className=type
-b.innerHTML=text
-d.appendChild(b)
-box().appendChild(d)
-box().scrollTop=box().scrollHeight
+    let d=document.createElement("div")
+    d.className="msg"
+
+    let b=document.createElement("div")
+    b.className=type
+    b.innerHTML=text
+
+    d.appendChild(b)
+    box().appendChild(d)
+
+    box().scrollTop=box().scrollHeight
+
+    // 🔊 Speak only bot messages
+    if(type === "bot"){
+        speak(text)
+    }
 }
 
 function buttons(arr){
@@ -172,13 +190,16 @@ function buttons(arr){
         let btn=document.createElement("button")
         btn.className="option-btn"
         btn.innerText=a.text
-        btn.onclick=a.action
+
+      btn.onclick=()=>{
+    a.action()   // only call action
+}
+
         box().appendChild(btn)
     })
 
-    box().scrollTop = box().scrollHeight; // ✅ force scroll
+    box().scrollTop = box().scrollHeight;
 }
-
 function selectEmployment(type){
     data.employment=type
     msg(type,"user")
@@ -189,7 +210,10 @@ function selectEmployment(type){
 
 function showFileName(input, id){
     if(input.files.length > 0){
-        document.getElementById(id).innerText = "✅ " + input.files[0].name;
+        let name = input.files[0].name;
+        document.getElementById(id).innerText = "✅ " + name;
+
+        speak("File uploaded " + name);
     }
 }
 
@@ -215,6 +239,11 @@ function lockChat(){
         file.style.cursor = "not-allowed";
     });
 
+}
+
+function toggleVoice(){
+    voiceEnabled = !voiceEnabled;
+    alert(voiceEnabled ? "Voice ON" : "Voice OFF");
 }
 
 function showBusinessOptions(){
@@ -523,16 +552,49 @@ box().appendChild(btn)
 
 },3000)}
 
-document.getElementById("userInput").addEventListener("keypress",function(e){
-if(e.key==="Enter"){
-sendMessage()
-}
-})
+document.getElementById("userInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        e.preventDefault(); // ✅ prevent mobile issues
+        sendMessage();
+    }
+});
 
 function goToLogin(){
 window.location.href="/"
 }
 
+let voiceEnabled = true;
+
+function speak(text){
+
+    if(!voiceEnabled) return;
+
+    const speech = new SpeechSynthesisUtterance();
+
+    // ✅ Remove HTML tags
+    let cleanText = text.replace(/<[^>]*>/g, "");
+
+    // ✅ Remove masked values like (••••)
+    cleanText = cleanText.replace(/\(.*?•+.*?\)/g, "");
+
+    // ✅ Remove emojis
+    cleanText = cleanText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
+
+    // ✅ Clean extra spaces
+    cleanText = cleanText.replace(/\s+/g, " ").trim();
+
+    // ❌ If nothing meaningful left → don't speak
+    if(!cleanText) return;
+
+    speech.text = cleanText;
+
+    speech.lang = "en-IN";
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+}
 </script>
 
 </body>
