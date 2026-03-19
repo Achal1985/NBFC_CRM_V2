@@ -151,7 +151,7 @@ margin-top:10px;
        oninput="allowOnlyNumbers(this)"
        enterkeyhint="send"
        autocomplete="off">
-<button onclick="sendMessage()" ontouchstart="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+<button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 
 </div>
@@ -241,6 +241,15 @@ function lockChat(){
 
 }
 
+function botSequence(messages, delay = 1500){
+
+    messages.forEach((text, index) => {
+        setTimeout(() => {
+            msg(text, "bot");
+        }, index * delay);
+    });
+}
+
 function toggleVoice(){
     voiceEnabled = !voiceEnabled;
     alert(voiceEnabled ? "Voice ON" : "Voice OFF");
@@ -297,7 +306,7 @@ function handleSubmit(btn){
 function focusInput(){
     let input = document.getElementById("userInput")
     if(!input.disabled){
-        input.focus()
+        setTimeout(()=>input.focus(), 300); // mobile delay fix
     }
 }
 
@@ -341,7 +350,7 @@ buttons([
 {text:"SME Unsecured Loan",action:()=>selectLoan("SME Unsecured")}
 ])
 
-step="name"
+step="loan_select"   // ✅ FIXED
 return
 }
 
@@ -384,16 +393,16 @@ step="aadhaar"
 }
 else if(step==="aadhaar"){
     if(input==="1111"){
-        msg("🔐 KYC Completed","bot")
-        msg("📊 Checking CIBIL Score...","bot")
+        botSequence([
+    "🔐 KYC Completed",
+    "📊 Checking CIBIL Score...",
+    "✅ CIBIL Score: 750",
+    "🏢 Select Business Name:"
+], 1800);
 
-        setTimeout(()=>{
-            msg("✅ CIBIL Score: 750","bot")
-            msg("🏢 Select Business Name:","bot")
-
-            showBusinessOptions()
-
-        },1000)
+setTimeout(() => {
+    showBusinessOptions();
+}, 7200);
 
     }else msg("❌ Invalid OTP","bot")
 }
@@ -504,57 +513,55 @@ function underwriting(){
         return;
     }
 
-    msg("🧠 Underwriting in Progress...","bot");
+    botSequence([
+        "🧠 Underwriting in Progress...",
+        "✅ Loan Approved",
+        "📄 Accept Agreement"
+    ], 1800);
 
     setTimeout(()=>{
-        msg("✅ Loan Approved","bot")
-        msg("📄 Accept Agreement","bot")
-
         let btn=document.createElement("button")
         btn.className="option-btn"
         btn.innerText="Accept Agreement"
         btn.onclick=esign
         box().appendChild(btn)
-
-    },2000)
+    }, 5400); // after sequence
 }
 
 function esign(){
-msg("✍️ eSign Completed","bot")
 
-setTimeout(()=>msg("🏦 Disbursement Initiated","bot"),1000)
-setTimeout(()=>msg("💰 Amount Credited","bot"),2000)
+    botSequence([
+        "✍️ eSign Completed",
+        "🏦 Disbursement Initiated",
+        "💰 Amount Credited"
+    ], 1800);
 
-setTimeout(()=>{
+    setTimeout(()=>{
 
-let acc="RFL"+Math.floor(Math.random()*100000000)
+        let acc="RFL"+Math.floor(Math.random()*100000000)
 
-msg("📊 Loan Account Created: "+acc,"bot")
-msg("🎉 Your "+data.product+" is successfully disbursed.","bot")
+        msg("📊 Loan Account Created: "+acc,"bot")
+        msg("🎉 Your "+data.product+" is successfully disbursed.","bot")
+        msg("🙏 Thanks for choosing RFL - "+data.product,"bot")
 
-// ✅ Final Thank You Message
-msg("🙏 Thanks for choosing RFL - "+data.product,"bot")
+        document.getElementById("userInput").disabled = true
+        document.querySelector(".input-area button").disabled = true
 
-// ❌ Disable input
-document.getElementById("userInput").disabled = true
+        lockChat()
 
-// ❌ Disable send button
-document.querySelector(".input-area button").disabled = true
+        let btn=document.createElement("button")
+        btn.className="option-btn"
+        btn.innerText="⬅ Go Back to Login"
+        btn.onclick=goToLogin
 
-lockChat()
-// ✅ Add Go Back Button
-let btn=document.createElement("button")
-btn.className="option-btn"
-btn.innerText="⬅ Go Back to Login"
-btn.onclick=goToLogin
+        box().appendChild(btn)
 
-box().appendChild(btn)
+    }, 6000);
+}
 
-},3000)}
-
-document.getElementById("userInput").addEventListener("keydown", function(e){
+document.getElementById("userInput").addEventListener("keypress", function(e){
     if(e.key === "Enter"){
-        e.preventDefault(); // ✅ prevent mobile issues
+        e.preventDefault();
         sendMessage();
     }
 });
@@ -565,34 +572,49 @@ window.location.href="/"
 
 let voiceEnabled = true;
 
+let voiceQueue = [];
+let isSpeaking = false;
+
 function speak(text){
 
     if(!voiceEnabled) return;
 
-    const speech = new SpeechSynthesisUtterance();
+    // Clean text
+    let cleanText = text.replace(/<[^>]*>/g, "")
+                        .replace(/\(.*?•+.*?\)/g, "")
+                        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "")
+                        .replace(/\s+/g, " ")
+                        .trim();
 
-    // ✅ Remove HTML tags
-    let cleanText = text.replace(/<[^>]*>/g, "");
-
-    // ✅ Remove masked values like (••••)
-    cleanText = cleanText.replace(/\(.*?•+.*?\)/g, "");
-
-    // ✅ Remove emojis
-    cleanText = cleanText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
-
-    // ✅ Clean extra spaces
-    cleanText = cleanText.replace(/\s+/g, " ").trim();
-
-    // ❌ If nothing meaningful left → don't speak
     if(!cleanText) return;
 
-    speech.text = cleanText;
+    // Push to queue
+    voiceQueue.push(cleanText);
+
+    // Start speaking if not already
+    if(!isSpeaking){
+        processQueue();
+    }
+}
+
+function processQueue(){
+    if(voiceQueue.length === 0){
+        isSpeaking = false;
+        return;
+    }
+
+    isSpeaking = true;
+
+    const speech = new SpeechSynthesisUtterance(voiceQueue.shift());
 
     speech.lang = "en-IN";
     speech.rate = 1;
     speech.pitch = 1;
 
-    window.speechSynthesis.cancel();
+    speech.onend = () => {
+        setTimeout(processQueue, 400); // slight gap between messages
+    };
+
     window.speechSynthesis.speak(speech);
 }
 </script>
