@@ -211,9 +211,12 @@ function selectEmployment(type){
 function showFileName(input, id){
     if(input.files.length > 0){
         let name = input.files[0].name;
+
+        // ✅ Show file name in UI
         document.getElementById(id).innerText = "✅ " + name;
 
-        speak("File uploaded " + name);
+        // ✅ Speak only generic message
+        speak("Document uploaded successfully");
     }
 }
 
@@ -456,7 +459,7 @@ else if(step==="amount"){
     if(parseInt(input) <= eligible){
         msg("✅ Eligible","bot")
         msg("🎯 Loan Offer: ₹" + eligible,"bot")
-        msg("📄 Valid Upload Documents","bot")
+        msg("📄 Upload Valid Documents","bot")
         offer()
     }else{
         msg("❌ Not Eligible, enter lower amount","bot")
@@ -478,7 +481,7 @@ div.className="upload-box"
 
 div.innerHTML=`
 
-<b>📄 Valid Upload Documents</b><br><br>
+<b>📄 Upload Valid Documents</b><br><br>
 
 PAN Card:<br>
 <input type="file" onchange="showFileName(this,'panFile')">
