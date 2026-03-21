@@ -181,6 +181,56 @@ padding:13px;
 
 }
 
+
+
+/* 🔥 FIX */
+width:auto !important;   /* override global button width */
+display:inline-block;
+
+/* Styling */
+padding:8px 14px;
+font-size:12px;
+border-radius:10px;
+
+background:linear-gradient(135deg,#00c896,#00e5ff);
+color:#fff;
+
+border:none;
+cursor:pointer;
+box-shadow:0 0 10px rgba(0,255,200,0.4);
+}
+
+.header-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+/* FIX TITLE CUT */
+.logo{
+font-size:20px;
+font-weight:bold;
+white-space:nowrap;
+}
+
+/* FIX BUTTON */
+.history-btn{
+width:auto !important;
+padding:8px 12px;
+font-size:12px;
+border-radius:10px;
+
+background:linear-gradient(135deg,#00c896,#00e5ff);
+color:#fff;
+
+border:none;
+cursor:pointer;
+
+box-shadow:0 0 10px rgba(0,255,200,0.4);
+flex-shrink:0; /* prevent squeezing */
+}
+
 </style>
 
 </head>
@@ -189,7 +239,11 @@ padding:13px;
 
 <div class="container">
 
-<div class="logo">💳 PayU Payment</div>
+<div id="historySection" style="display:none; text-align:left;"></div>
+<div class="header-bar">
+    <div class="logo">💳 PayU Payment</div>
+    <button class="history-btn" onclick="showHistory()">📜 Payment History</button>
+</div>
 
 
 
@@ -250,6 +304,18 @@ let otp = document.getElementById("otp").value
 
 if(otp === "123456"){
 
+let emi = document.getElementById("emiAmount").value;
+
+// ✅ Save payment history
+let history = JSON.parse(localStorage.getItem("payments") || "[]");
+
+history.push({
+    amount: emi,
+    date: new Date().toLocaleString()
+});
+
+localStorage.setItem("payments", JSON.stringify(history));
+
 document.getElementById("otpSection").style.display="none"
 document.getElementById("successMsg").style.display="block"
 
@@ -261,6 +327,49 @@ setTimeout(()=>{
 alert("Invalid OTP")
 }
 
+}
+
+function showHistory(){
+
+document.getElementById("cardSection").style.display="none";
+document.getElementById("otpSection").style.display="none";
+document.getElementById("successMsg").style.display="none";
+
+let section = document.getElementById("historySection");
+section.style.display = "block";
+
+let history = JSON.parse(localStorage.getItem("payments") || "[]");
+
+if(history.length === 0){
+    section.innerHTML = "<p>No payment history found</p>";
+    return;
+}
+
+let html = "<h3>📜 Payment History</h3><br>";
+
+history.reverse().forEach(p=>{
+    html += `
+    <div style="
+        background:rgba(255,255,255,0.1);
+        padding:10px;
+        border-radius:10px;
+        margin-bottom:10px;
+        border:1px solid rgba(255,255,255,0.2);
+    ">
+        💰 EMI: ₹${p.amount}<br>
+        📅 ${p.date}
+    </div>
+    `;
+});
+
+html += `<button onclick="goBack()">⬅ Back</button>`;
+
+section.innerHTML = html;
+}
+
+function goBack(){
+document.getElementById("historySection").style.display="none";
+document.getElementById("cardSection").style.display="block";
 }
 
 </script>
