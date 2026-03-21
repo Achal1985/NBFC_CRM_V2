@@ -233,7 +233,41 @@ Answer shortly.
 
     except:
         return jsonify({"answer": "AI service unavailable"})
+# ===============================
+# TICKET RAISE API
+# ===============================
 
+@app.route("/raise_ticket", methods=["POST"])
+def raise_ticket():
+
+    mobile = session.get("mobile")
+    issue_type = request.form.get("type")
+    description = request.form.get("desc")
+
+    if not mobile:
+        return jsonify({"message": "User not logged in"})
+
+    ticket_id = f"TKT{pd.Timestamp.now().strftime('%Y%m%d%H%M%S')}"
+
+    ticket_data = {
+        "Ticket ID": ticket_id,
+        "Mobile": mobile,
+        "Issue Type": issue_type,
+        "Description": description,
+        "Status": "Open"
+    }
+
+    file = "tickets.csv"
+
+    if os.path.exists(file):
+        df = pd.read_csv(file)
+        df = pd.concat([df, pd.DataFrame([ticket_data])], ignore_index=True)
+    else:
+        df = pd.DataFrame([ticket_data])
+
+    df.to_csv(file, index=False)
+
+    return jsonify({"message": f"✅ Ticket Raised Successfully: {ticket_id}"})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
