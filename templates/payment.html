@@ -191,8 +191,10 @@ padding:13px;
 
 <div class="logo">💳 PayU Payment</div>
 
-<div id="cardSection">
 
+
+<div id="cardSection">
+<input type="text" id="emiAmount" placeholder="Enter EMI Amount">
 <input type="text" id="cardNumber" placeholder="Enter Card Number" maxlength="16">
 <input type="text" placeholder="MM/YY">
 <input type="password" placeholder="CVV" maxlength="3">
@@ -219,18 +221,29 @@ padding:13px;
 
 function sendOTP(){
 
-let card = document.getElementById("cardNumber").value
+let emi = document.getElementById("emiAmount").value.trim()
+let card = document.getElementById("cardNumber").value.trim()
 
-if(card.length !== 16){
+// ✅ EMI validation first
+if(!/^[0-9]+$/.test(emi) || parseInt(emi) <= 0){
+    alert("Enter valid EMI amount")
+    return
+}
+
+// ✅ Card validation
+if(card.length !== 16 || !/^[0-9]+$/.test(card)){
     alert("Enter valid 16 digit card number")
     return
 }
 
+// Proceed
 document.getElementById("cardSection").style.display="none"
 document.getElementById("otpSection").style.display="block"
+document.getElementById("emiAmount").addEventListener("input", function(){
+    this.value = this.value.replace(/[^0-9]/g, "");
+});
 
 }
-
 function verifyPayment(){
 
 let otp = document.getElementById("otp").value
