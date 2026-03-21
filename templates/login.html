@@ -20,9 +20,9 @@ padding:0;
 font-family:'Segoe UI',sans-serif;
 }
 
-/* ANIMATED BACKGROUND */
+/* BODY FIX (IMPORTANT FOR MOBILE) */
 body{
-height:100vh;
+min-height:100dvh;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -30,37 +30,43 @@ justify-content:center;
 background:linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#00c896);
 background-size:400% 400%;
 animation:gradientBG 12s ease infinite;
-overflow:hidden;
+
+/* FIX MOBILE SCROLL */
+padding:15px;
+overflow-x:hidden;
 }
 
-/* FLOATING GLOW EFFECT */
-body::before{
+/* FLOATING LIGHTS */
+body::before,
+body::after{
 content:"";
 position:absolute;
-width:500px;
-height:500px;
-background:radial-gradient(circle,#00e5ff33,transparent);
-top:-100px;
-left:-100px;
+border-radius:50%;
 filter:blur(80px);
+z-index:0;
+}
+
+body::before{
+width:300px;
+height:300px;
+background:#00e5ff33;
+top:-80px;
+left:-80px;
 animation:float 10s infinite alternate;
 }
 
 body::after{
-content:"";
-position:absolute;
-width:400px;
-height:400px;
-background:radial-gradient(circle,#00ffcc33,transparent);
-bottom:-100px;
-right:-100px;
-filter:blur(80px);
+width:250px;
+height:250px;
+background:#00ffcc33;
+bottom:-80px;
+right:-80px;
 animation:float 12s infinite alternate-reverse;
 }
 
 @keyframes float{
 from{transform:translate(0,0);}
-to{transform:translate(40px,40px);}
+to{transform:translate(30px,30px);}
 }
 
 @keyframes gradientBG{
@@ -69,20 +75,19 @@ to{transform:translate(40px,40px);}
 100%{background-position:0% 50%;}
 }
 
-/* GLASS CARD */
+/* CARD */
 .login-card{
-width:360px;
-padding:35px;
+width:100%;
+max-width:380px;
+padding:28px;
 border-radius:20px;
 position:relative;
 z-index:2;
 
-/* GLASS */
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(25px);
 -webkit-backdrop-filter:blur(25px);
 
-/* BORDER GLOW */
 border:1px solid rgba(255,255,255,0.2);
 
 box-shadow:
@@ -96,7 +101,7 @@ animation:fadeUp 0.8s ease;
 }
 
 @keyframes fadeUp{
-from{opacity:0; transform:translateY(30px);}
+from{opacity:0; transform:translateY(25px);}
 to{opacity:1; transform:translateY(0);}
 }
 
@@ -107,25 +112,23 @@ align-items:center;
 justify-content:center;
 gap:8px;
 font-weight:bold;
-margin-bottom:10px;
-font-size:clamp(18px,4.5vw,26px);
+margin-bottom:8px;
+font-size:clamp(18px,5vw,24px);
 flex-wrap:wrap;
-line-height:1.3;
 }
 
 /* SUBTITLE */
 .subtitle{
 font-size:14px;
-margin-bottom:25px;
+margin-bottom:20px;
 opacity:0.85;
-letter-spacing:0.5px;
 }
 
-/* BUTTONS */
+/* BUTTON */
 button{
 width:100%;
 padding:14px;
-margin-bottom:15px;
+margin-bottom:12px;
 
 border:none;
 border-radius:12px;
@@ -144,39 +147,49 @@ gap:10px;
 transition:all 0.3s ease;
 }
 
-/* HOVER EFFECT */
+/* INTERACTION */
 button:hover{
-transform:scale(1.05);
-box-shadow:0 0 20px rgba(0,255,200,0.6);
+transform:scale(1.03);
+box-shadow:0 0 15px rgba(0,255,200,0.6);
 }
 
-/* CLICK EFFECT */
 button:active{
-transform:scale(0.98);
-}
-
-/* ICON STYLE */
-button i{
-font-size:16px;
+transform:scale(0.97);
 }
 
 /* FOOTER */
 .footer{
-margin-top:15px;
+margin-top:12px;
 font-size:11px;
 opacity:0.7;
 }
 
-/* MOBILE */
-@media(max-width:420px){
-.login-card{
-width:90%;
-padding:25px;
+/* 📱 MOBILE PERFECT TUNING */
+@media(max-width:480px){
+
+body{
+padding:12px;
+align-items:center;
 }
+
+.login-card{
+padding:22px;
+border-radius:16px;
+}
+
+/* Reduce spacing for small screens */
+.subtitle{
+margin-bottom:15px;
+}
+
+button{
+padding:13px;
+font-size:14px;
+}
+
 }
 
 </style>
-
 </head>
 
 <body>
