@@ -255,9 +255,10 @@ font-size:16px; /* prevent zoom */
 <div class="input-area">
 <input id="userInput"
 placeholder="Type 'hi' to start"
-oninput="allowOnlyNumbers(this)"
+oninput="handleInput(this)"
 enterkeyhint="send"
-autocomplete="off">
+autocomplete="off"
+style="text-transform: uppercase;">
 <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 
@@ -421,15 +422,21 @@ function focusInput(){
     }
 }
 
-function allowOnlyNumbers(input){
+function handleInput(input){
 
-    if(step === "income" || step === "amount"){
-        // Remove non-numeric characters
+    // ✅ Always uppercase
+    input.value = input.value.toUpperCase();
+
+    // ✅ Only numbers for these steps
+    if(step === "income" || step === "amount" || step === "years"){
         input.value = input.value.replace(/[^0-9]/g, "");
     }
 
+    // ✅ Only characters for name
+    if(step === "name"){
+        input.value = input.value.replace(/[^A-Z\s]/g, "");
+    }
 }
-
 function sendMessage(){
 let input=document.getElementById("userInput").value.trim()
 if(!input || document.getElementById("userInput").disabled) return
@@ -466,6 +473,17 @@ return
 }
 
 else if(step==="name"){
+
+if(!/^[A-Z\s]+$/.test(input)){
+msg("❌ Enter valid name (letters only)","bot")
+return
+}
+
+if(input.trim() === ""){
+msg("❌ Name cannot be empty","bot")
+return
+}
+
 data.name=input
 msg("📱 Enter Mobile Number:","bot")
 step="mobile"
@@ -525,6 +543,12 @@ else if(step==="business_manual"){
 }
 
 else if(step==="years"){
+
+if(!/^[0-9]+$/.test(input) || parseInt(input) <= 0){
+msg("❌ Enter valid years (numbers only & > 0)","bot")
+return
+}
+
 data.years=input
 
 msg("💼 Select Employment Status:","bot")
