@@ -12,127 +12,202 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-*{box-sizing:border-box;}
-
-body{
-font-family:Segoe UI;
+/* RESET */
+*{
+box-sizing:border-box;
 margin:0;
-background:linear-gradient(-45deg,#1f4037,#99f2c8,#0f2027,#2c5364);
-background-size:400% 400%;
-animation:gradientMove 12s ease infinite;
+padding:0;
+font-family:'Segoe UI',sans-serif;
 }
 
-@keyframes gradientMove{
+/* SAME BACKGROUND AS LOGIN */
+body{
+min-height:100dvh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+background:linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#00c896);
+background-size:400% 400%;
+animation:gradientBG 12s ease infinite;
+
+padding:15px;
+overflow-x:hidden;
+}
+
+/* FLOATING LIGHT */
+body::before,
+body::after{
+content:"";
+position:absolute;
+border-radius:50%;
+filter:blur(80px);
+z-index:0;
+}
+
+body::before{
+width:300px;
+height:300px;
+background:#00e5ff33;
+top:-80px;
+left:-80px;
+animation:float 10s infinite alternate;
+}
+
+body::after{
+width:250px;
+height:250px;
+background:#00ffcc33;
+bottom:-80px;
+right:-80px;
+animation:float 12s infinite alternate-reverse;
+}
+
+@keyframes gradientBG{
 0%{background-position:0% 50%;}
 50%{background-position:100% 50%;}
 100%{background-position:0% 50%;}
 }
 
-.navbar{
-background:rgba(0,0,0,0.6);
-color:white;
-padding:15px;
+@keyframes float{
+from{transform:translate(0,0);}
+to{transform:translate(30px,30px);}
+}
+
+/* GLASS CONTAINER */
+.container{
+width:100%;
+max-width:900px;
+padding:25px;
+border-radius:20px;
+z-index:2;
+
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(25px);
+
+border:1px solid rgba(255,255,255,0.2);
+
+box-shadow:
+0 0 40px rgba(0,255,200,0.2),
+inset 0 0 20px rgba(255,255,255,0.05);
+
+color:#fff;
+animation:fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(25px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* HEADER */
+.header{
 display:flex;
 justify-content:space-between;
 align-items:center;
+margin-bottom:15px;
 }
 
 .logo{
-font-size:22px;
+font-size:clamp(18px,4vw,24px);
 font-weight:bold;
 }
 
-.logout-btn{
-background:#ff3b3b;
-color:white;
+/* BUTTON */
+button{
+padding:10px 16px;
 border:none;
-padding:8px 16px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.container{
-max-width:900px;
-width:95%;
-margin:40px auto;
-background:white;
-padding:30px;
-border-radius:15px;
-box-shadow:0 20px 50px rgba(0,0,0,0.4);
-text-align:center;
-}
-
-@media(max-width:768px){
-
-.container{
-    padding:15px;
-    margin:20px auto;
-}
-
-.title{
-    font-size:20px;
-}
-
-.voice-btn{
-    width:100%;
-    font-size:14px;
-    padding:10px;
-}
-
-.navbar{
-    flex-direction:column;
-    gap:10px;
-    text-align:center;
-}
-
-.card{
-    font-size:14px;
-}
-
-}
-
-.title{
-font-size:26px;
-margin-bottom:20px;
-color:#1f4037;
-}
-
-.voice-btn{
-margin-top:10px;
-padding:12px 18px;
-background:#ff6a00;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.card{
-background:white;
-padding:15px;
 border-radius:10px;
-box-shadow:0 6px 15px rgba(0,0,0,0.2);
-text-align:left;
-margin-top:15px;
+cursor:pointer;
+
+background:linear-gradient(135deg,#00c896,#00e5ff);
+color:#fff;
+
+display:flex;
+align-items:center;
+gap:8px;
+
+transition:0.3s;
 }
 
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 15px rgba(0,255,200,0.6);
+}
+
+/* TITLE */
+.title{
+text-align:center;
+font-size:22px;
+margin-bottom:15px;
+}
+
+/* CARD (GLASS STYLE) */
+.card{
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(10px);
+
+padding:15px;
+border-radius:12px;
+margin-top:12px;
+
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* TEXT */
 .ticket-id{
 font-weight:bold;
-color:#1f4037;
+color:#00e5ff;
 }
 
 .status{
 font-weight:bold;
 }
 
-.open{ color:red; }
-.progress{ color:orange; }
-.closed{ color:green; }
+.open{ color:#ff4d4d; }
+.progress{ color:#ffc107; }
+.closed{ color:#00ff99; }
 
+/* ACTION BUTTONS */
+.actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+margin-top:20px;
+}
+
+/* FOOTER */
 .footer{
-margin-top:40px;
-color:white;
+margin-top:20px;
 text-align:center;
+font-size:12px;
+opacity:0.7;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+
+.container{
+padding:18px;
+}
+
+.title{
+font-size:18px;
+}
+
+button{
+width:100%;
+justify-content:center;
+}
+
+.header{
+flex-direction:column;
+gap:10px;
+}
+
 }
 
 </style>
@@ -141,40 +216,38 @@ text-align:center;
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
+<div class="container">
 
+<!-- HEADER -->
+<div class="header">
 <div class="logo">🏦 RFL CRM AI</div>
 
-<div>
-<button class="logout-btn" onclick="goBack()">
+<button onclick="goBack()">
 <i class="fa fa-arrow-left"></i> Back
 </button>
 </div>
 
-</div>
-
-<!-- MAIN CONTAINER -->
-<div class="container">
-
 <div class="title">📋 My Support Tickets</div>
-<div id="ticketsContainer"></div>
-<!-- ACTION BUTTONS -->
-<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
 
-<button class="voice-btn" onclick="goBack()" style="background:#007bff;">
+<div id="ticketsContainer"></div>
+
+<!-- ACTION BUTTONS -->
+<div class="actions">
+
+<button onclick="goBack()" style="background:#007bff;">
 🏠 Dashboard
 </button>
 
-<button class="voice-btn" onclick="showContact()" style="background:#28a745;">
+<button onclick="showContact()" style="background:#28a745;">
 📞 Contact Us
 </button>
 
+</div>
 
 <!-- CONTACT POPUP -->
 <div id="contactPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
 
-<div style="background:white; padding:25px; border-radius:10px; width:320px; text-align:center;">
+<div style="background:white; padding:25px; border-radius:10px; width:320px; text-align:center; color:black;">
 
 <h3>📞 Customer Support</h3>
 
@@ -191,6 +264,8 @@ text-align:center;
 
 <div class="footer">
 RFL CRM AI System | Tickets Dashboard
+</div>
+
 </div>
 
 <script>
