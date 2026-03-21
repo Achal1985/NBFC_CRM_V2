@@ -187,6 +187,13 @@ def aihelp():
 
     row = last_customer_data
 
+    # ✅ EMI INTENT
+    if "emi" in question:
+        return jsonify({
+            "answer": "Your next EMI is due soon. Would you like to make payment?"
+        })
+
+    # ✅ LOAN SUMMARY
     if "loan summary" in question:
 
         answer = f"""
@@ -203,6 +210,7 @@ Loan Status : {row.get("Loan Status")}
 
         return jsonify({"answer": answer})
 
+    # ✅ AI FALLBACK
     if client is None:
         return jsonify({"answer": "AI service unavailable."})
 
@@ -233,6 +241,7 @@ Answer shortly.
 
     except:
         return jsonify({"answer": "AI service unavailable"})
+
 # ===============================
 # TICKET RAISE API
 # ===============================
@@ -268,6 +277,42 @@ def raise_ticket():
     df.to_csv(file, index=False)
 
     return jsonify({"message": f"✅ Ticket Raised Successfully: {ticket_id}"})
+
+@app.route("/my_tickets")
+def my_tickets():
+
+    mobile = session.get("mobile")
+
+    if not os.path.exists("tickets.csv"):
+        return jsonify([])
+
+    df = pd.read_csv("tickets.csv")
+    user_tickets = df[df["Mobile"] == mobile]
+
+    return jsonify(user_tickets.to_dict(orient="records"))
+
+@app.route("/tickets")
+def tickets():
+    return render_template("tickets.html")
+
+@app.route("/get_tickets")
+def get_tickets():
+
+    import pandas as pd
+    import os
+
+    file = "tickets.csv"
+
+    if not os.path.exists(file):
+        return jsonify([])
+
+    df = pd.read_csv(file)
+
+    return jsonify(df.to_dict(orient="records"))
+
+@app.route("/payment")
+def payment():
+    return render_template("payment.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
