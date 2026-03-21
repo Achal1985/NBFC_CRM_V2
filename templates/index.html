@@ -140,6 +140,52 @@ gap:15px;
 margin-top:25px;
 }
 
+.tabs button{
+    background:white;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+@media(max-width:768px){
+
+.container{
+    padding:15px;
+    margin:20px auto;
+}
+
+.title{
+    font-size:20px;
+}
+
+.search-box{
+    flex-direction:column;
+}
+
+.search-box input{
+    width:100%;
+    margin-bottom:10px;
+}
+
+.search-box button{
+    width:100%;
+}
+
+.voice-btn{
+    width:100%;
+    font-size:14px;
+    padding:10px;
+}
+
+.tabs{
+    flex-direction:column;
+}
+
+.tabs button{
+    width:100%;
+}
+
+}
+
+
 .card{
 background:white;
 padding:15px;
@@ -215,6 +261,27 @@ color:#ffd700;
     animation:blink 1s infinite;
 }
 
+.tabs{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.tabs button{
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ddd;
+}
+
+.tabs button.active{
+    background:#1f4037;
+    color:white;
+}
+
 </style>
 
 </head>
@@ -271,7 +338,17 @@ placeholder="Mobile/LAN/CustomerID">
 📞 Contact Us
 </button>
 
+<button class="voice-btn" onclick="openTicketsPage()" style="background:#6f42c1;">
+📋 My Tickets
+</button>
+
+<button class="voice-btn" onclick="payEMI()" style="background:#dc3545;">
+💳 Pay EMI
+</button>
+
 </div>
+
+
 <div class="tabs">
 
 <button id="tabCustomer" class="active" onclick="showCustomer()">Customer Loan Details</button>
@@ -363,6 +440,42 @@ function showContact(){
 
 function closeContact(){
     document.getElementById("contactPopup").style.display="none"
+}
+
+
+function loadTickets(){
+
+let tickets = [
+    { id: "TKT1001", issue: "My payment is not updated" },
+    { id: "TKT1002", issue: "Please update my email id as sunil1133@gmail.com" },
+    { id: "TKT1003", issue: "Please share foreclosure statement of my account" },
+    { id: "TKT1004", issue: "Please provide my interest certificate for FY 2025-2026" }
+]
+
+let html = "<h3>My Tickets</h3>"
+
+tickets.forEach(t=>{
+    html += `
+    <div class="card">
+        <b>${t.id}</b><br>
+        ${t.issue}<br>
+        Status: Open
+    </div>
+    `
+})
+
+document.getElementById("result").innerHTML = html
+
+speak("Showing your support tickets")
+
+}
+
+function payEMI(){
+    speak("Redirecting to EMI payment page")
+    window.location.href = "/payment"
+}
+function openTicketsPage(){
+    window.location.href = "/tickets"
 }
 
 function speak(text){
@@ -551,6 +664,12 @@ recognition.start()
 recognition.onresult=function(event){
 
 let transcript = event.results[0][0].transcript
+
+if(transcript.includes("complaint")){
+    openTicketPopup()
+    speak("Please describe your issue")
+    return
+}
 
 let cleanNumber = transcript.replace(/[^0-9]/g,'')
 
@@ -769,5 +888,9 @@ style="width:100%; padding:10px; height:80px;"></textarea>
 </div>
 </div>
 
+
+
+
 </body>
+
 </html>
