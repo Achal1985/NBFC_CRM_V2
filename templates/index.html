@@ -782,6 +782,26 @@ function verifyOTP(){
     }
 }
 
+// 🔒 Strong Back Button Block
+(function () {
+
+    // Push multiple states to block back
+    for (let i = 0; i < 5; i++) {
+        history.pushState(null, null, location.href);
+    }
+
+    window.addEventListener("popstate", function () {
+        alert("Please click on Logout");
+        speak("Please click on logout to exit the system");
+
+        // Force stay on same page
+        history.pushState(null, null, location.href);
+    });
+
+})();
+
+
+
 </script>
 
 <!-- LOAN POPUP -->
