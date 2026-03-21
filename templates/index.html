@@ -244,6 +244,8 @@ color:#ffd700;
 
 <div class="title">AI Powered RFL CRM Dashboard</div>
 
+
+
 <div class="search-box">
 
 <input id="search"
@@ -255,10 +257,21 @@ placeholder="Mobile/LAN/CustomerID">
 
 </div>
 
+<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+
 <button class="voice-btn" onclick="startVoice()">
 🎤 Hindi Voice Search
 </button>
 
+<button class="voice-btn" onclick="openTicketPopup()" style="background:#007bff;">
+🎫 Raise Ticket
+</button>
+
+<button class="voice-btn" onclick="showContact()" style="background:#28a745;">
+📞 Contact Us
+</button>
+
+</div>
 <div class="tabs">
 
 <button id="tabCustomer" class="active" onclick="showCustomer()">Customer Loan Details</button>
@@ -308,6 +321,48 @@ fetch("/logout")
 window.location="/"
 })
 
+}
+
+function openTicketPopup(){
+    document.getElementById("ticketPopup").style.display="flex"
+}
+
+function closeTicketPopup(){
+    document.getElementById("ticketPopup").style.display="none"
+}
+
+function submitTicket(){
+
+    let type = document.getElementById("issueType").value
+    let desc = document.getElementById("issueDesc").value
+
+    if(!type || !desc){
+        alert("Please fill all fields")
+        return
+    }
+
+    fetch("/raise_ticket",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+        body:`type=${encodeURIComponent(type)}&desc=${encodeURIComponent(desc)}`
+    })
+    .then(res=>res.json())
+    .then(data=>{
+    alert(data.message)
+    speak("Your support ticket has been raised successfully")
+    closeTicketPopup()
+})
+}
+
+function showContact(){
+    document.getElementById("contactPopup").style.display="flex"
+    speak("Customer care number is 1800 1800 001")
+}
+
+function closeContact(){
+    document.getElementById("contactPopup").style.display="none"
 }
 
 function speak(text){
@@ -664,6 +719,52 @@ style="width:100%; padding:10px; margin:5px 0;"><br>
 
 </div>
 
+</div>
+
+<!-- TICKET POPUP -->
+<div id="ticketPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+<div style="background:white; padding:25px; border-radius:10px; width:350px; text-align:center;">
+
+<h3>🎫 Raise Support Ticket</h3>
+
+<select id="issueType" style="width:100%; padding:10px; margin:10px 0;">
+<option value="">Select Issue</option>
+<option>Payment Issue</option>
+<option>Loan Query</option>
+<option>EMI Issue</option>
+<option>Technical Issue</option>
+</select>
+
+<textarea id="issueDesc" placeholder="Describe your issue..."
+style="width:100%; padding:10px; height:80px;"></textarea>
+
+<br><br>
+
+<button onclick="submitTicket()">Submit</button>
+<br><br>
+
+<button onclick="closeTicketPopup()">Close</button>
+
+</div>
+</div>
+
+<!-- CONTACT POPUP -->
+<div id="contactPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+<div style="background:white; padding:25px; border-radius:10px; width:320px; text-align:center;">
+
+<h3>📞 Customer Support</h3>
+
+<p style="font-size:18px; font-weight:bold; color:#1f4037;">
+1800 1800 001
+</p>
+
+<br>
+
+<button onclick="closeContact()">Close</button>
+
+</div>
 </div>
 
 </body>
